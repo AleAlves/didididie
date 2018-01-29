@@ -15,13 +15,13 @@ var express = require('express'),
 var port = process.env.PORT || 8080;
 global.dev = true;
 global.version = "1.0.0";
-global.database_link = "mongodb://root:NlI9yy04Lp0TiiMl@cluster0-shard-00-00-95wkb.mongodb.net:27017,cluster0-shard-00-01-95wkb.mongodb.net:27017,cluster0-shard-00-02-95wkb.mongodb.net:27017/authSource=admin?replicaSet=Cluster0-shard-0&ssl=false";
+global.database_link = process.env.DATABASE || 'mongodb://localhost:27017/didididie';
 global.querystring = querystring;
 global.request = request;
 global.cookieParser = cookieParser;
 global.client_id = '90e001358d1e4ffc9dbd814a1d458c9a'; // Your client id
 global.client_secret = 'd6f1a0404e1048ec8592ea8148641987'; // Your secret
-global.redirect_uri = 'https://safe-waters-83512.herokuapp.com/'; // Your redirect uri
+global.redirect_uri = process.env.CALLBACK || 'http://127.0.0.1:8080/callback/'; // Your redirect uri
 
 var database = database_link;
 

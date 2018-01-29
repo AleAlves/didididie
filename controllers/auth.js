@@ -19,29 +19,26 @@ module.exports = function (app) {
         login: function (req, res) {
             var state = generateRandomString(16);
             res.cookie(stateKey, state);
-            console.log("WOW");
             // your application requests authorization
             var scope = 'user-read-private user-read-email playlist-read-collaborative';
             res.redirect('https://accounts.spotify.com/authorize?' +
                 querystring.stringify({ response_type: 'code', client_id: client_id, scope: scope, redirect_uri: redirect_uri, state: state }));
         },
 
-        logout: function(req, res){
+        logout: function (req, res) {
             req.session.destroy();
             res.redirect('/home/index');
         },
 
         callback: function (req, res) {
-            // your application requests refresh and access tokens
-            // after checking the state parameter
+          
             var code = req.query.code || null;
             var state = req.query.state || null;
             var storedState = req.cookies ? req.cookies[stateKey] : null;
-            console.log("xxx");
+
             if (state === null) {
                 res.redirect('/#' + querystring.stringify({ error: 'state_mismatch' }));
             } else {
-                console.log("xxx");
                 res.clearCookie(stateKey);
                 var authOptions = {
                     url: 'https://accounts.spotify.com/api/token',
@@ -57,9 +54,7 @@ module.exports = function (app) {
                 };
 
                 request.post(authOptions, function (error, response, body) {
-                    console.log("xxx");
                     if (!error && response.statusCode === 200) {
-                        console.log("666");
                         var access_token = body.access_token,
                             refresh_token = body.refresh_token;
 
@@ -68,11 +63,10 @@ module.exports = function (app) {
                             headers: { 'Authorization': 'Bearer ' + access_token },
                             json: true
                         };
-                        console.log(access_token);
-                        console.log(refresh_token);
 
                         // use the access token to access the Spotify Web API
                         request.get(options, function (error, response, body) {
+                            console.log("Body:");
                             console.log(body);
                             var user_object = new Object();
                             user_object.user_id = body.id;
@@ -97,9 +91,8 @@ module.exports = function (app) {
                                         else {
                                             console.log("Usuario existe");
                                         }
-                                        console.log("sexao");
                                         req.session.user = user_object;
-                                        console.log(req.session.user); 
+                                        console.log(req.session.user);
                                         global.user_logged_id = body.id;
                                         console.log(user_logged_id);
                                         // we can also pass the token to the browser to make requests from there
