@@ -16,6 +16,9 @@
                             Rate
                         </th>
                         <th>
+                            Votes
+                        </th>
+                        <th>
                             Name
                         </th>
                         <th>
@@ -25,7 +28,7 @@
                             Added by
                         </th>
                         <th>
-
+                            Ranking
                         </th>
                     </tr>
                 </thead>
@@ -67,11 +70,13 @@
                     $('tbody').
                         append('<tr>').
                         append('<td>' + result.list[i].track_rates_avarage_rate + '</td>').
+                        append('<td>' + result.list[i].track_rates.length + '</td>').
                         append('<td>' + result.list[i].track_name + '</td>').
                         append('<td>' + result.list[i].track_artist + '</td>').
                         append('<td>' + usersNames[result.list[i].track_add_by] == undefined ? "Não Consta" : usersNames[result.list[i].track_add_by] + '</td>').
                         append('<td>' + position + 'º</td>');
                     $('tbody').append('</tr>');
+                    console.log(result.list[i]);
                 }
             }
         </script>

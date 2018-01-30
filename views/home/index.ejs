@@ -1,14 +1,14 @@
 <% include ../header %>
 
     <body>
-        <div id="loading"></div>
+        <div id="loading" class="loading"></div>
         <div class="container">
             <div id="login">
                 <h1>Bem vindo(a)</h1>
                 <h3>Participe com avaliações das músicas de suas playlists colaborativas</h3>
                 <br>
                 <br>
-                <a href="/login" class="btn btn-primary">Log in with Spotify</a>
+                <a href="/login" class="btn btn-primary action-button">Log in</a>
             </div>
             <div id="loggedin">
                 <div id="user-profile">
@@ -61,13 +61,14 @@
       </dl>
     </script>
         <script>
-            $(document).ajaxStart(function () {
-                $('#loading_gif').show();
-            }).ajaxStop(function () {
-                $('#loading_gif').hide();
-            });
 
             (function () {
+
+                $(document).ajaxStart(function () {
+                    $('#loading').show();
+                }).ajaxStop(function () {
+                    $('#loading').hide();
+                });
                 /**
                  * Obtains parameters from the hash of the URL
                  * @return Object
@@ -100,6 +101,9 @@
                 if (error) {
                     console.log(error);
                     alert('There was an error during the authentication');
+                    $('#login').show();
+                    $('#loggedin').hide();
+                    $('#loading').hide();
                 } else {
                     if (access_token) {
                         // render oauth info
@@ -124,6 +128,7 @@
                         // render initial screen
                         $('#login').show();
                         $('#loggedin').hide();
+                        $('#loading').hide();
                     }
 
                     document.getElementById('update-playlist').addEventListener('click', function () {
@@ -140,6 +145,7 @@
                         });
                         request.fail(function (jqXHR, textStatus) {
                             console.log(textStatus);
+                            $('#loading').hide();
                         });
                     });
 

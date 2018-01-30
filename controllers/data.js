@@ -27,14 +27,9 @@ module.exports = function (app) {
     };
 
     function getTopRated(req, res) {
-        track.find({}).sort({ track_rates_avarage_rate: -1 }).select({
-            track_id: 1,
-            track_name: 1,
-            track_artist: 1,
-            track_image: 1,
-            track_add_by: 1,
-            track_rates_avarage_rate: 1,
-        }).exec(function (error, trackList) {
+        track.find({}).sort({
+            track_rates_avarage_rate: -1
+        }).select({}).exec(function (error, trackList) {
             user.find({}).select({ user_id: 1, user_display_name: 1 }).exec(function (error, usersList) {
                 if (error) {
                     res.send({ 'list': trackList });
