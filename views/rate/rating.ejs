@@ -1,143 +1,123 @@
 <% include ../header %>
 
-    <style>
-        .app-fab--thumb {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-        }
+    <body>
+        <a href="/">
+            <button class="mdc-fab material-icons app-fab--absolute" aria-label="back">
+                <span class="mdc-fab__icon">
+                    home
+                </span>
+            </button>
+        </a>
+        <div class="container">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>
+                            Album
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Artist
+                        </th>
+                        <th>
 
-        .app-fab--absolute {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-        }
+                        </th>
+                        <th>
 
-        @media(min-width: 1024px) {
-            .app-fab--absolute {
-                bottom: 1.5rem;
-                right: 1.5rem;
-            }
-        }
-    </style>
-    <a href="/">
-        <button class="mdc-fab material-icons app-fab--absolute" aria-label="back">
-            <span class="mdc-fab__icon">
-                home
-            </span>
-        </button>
-    </a>
-    <div class="container">
-        <table class="table table-condensed">
-            <thead>
-                <tr>
-                    <th>
-                        Album
-                    </th>
-                    <th>
-                        Name
-                    </th>
-                    <th>
-                        Artist
-                    </th>
-                    <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <script>
+            var listArray = Array();
 
-                    </th>
-                    <th>
+            $(document).ready(function () {
+                getPlayList();
 
-                    </th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    <script>
-        var listArray = Array();
-        $(document).ready(function () {
-            getPlayList();
+                function getPlayList() {
+                    var request = $.ajax({
+                        cache: false,
+                        url: "/rating"
+                    });
 
-            function getPlayList() {
+                    request.done(function (result) {
+                        console.log(result);
+                        loadData(result);
+                    });
+                    request.fail(function (jqXHR, textStatus) {
+                        console.log(textStatus);
+                    });
+                }
+
+            });
+
+            function positive(id) {
                 var request = $.ajax({
                     cache: false,
-                    url: "/getteste"
+                    url: "/rate",
+                    type: 'POST',
+                    data: {
+                        'track_id': listArray[id],
+                        'rate_value': 1
+                    }
                 });
 
-                request.done(function (result) {
-                    loadData(result);
+                request.done(function (data) {
+                    loadData(data);
                 });
                 request.fail(function (jqXHR, textStatus) {
                     console.log(textStatus);
                 });
             }
 
-        });
+            function negative(id) {
+                var request = $.ajax({
+                    cache: false,
+                    url: "/rate",
+                    type: 'POST',
+                    data: {
+                        'track_id': listArray[id],
+                        'rate_value': -1
+                    }
+                });
 
-        function positive(id) {
-            var request = $.ajax({
-                cache: false,
-                url: "/rate",
-                type: 'POST',
-                data: {
-                    'track_id': listArray[id],
-                    'rate_value': 1
-                }
-            });
+                request.done(function (data) {
+                    loadData(data);
+                });
+                request.fail(function (jqXHR, textStatus) {
+                    console.log(textStatus);
+                });
+            }
 
-            request.done(function (data) {
-                loadData(data);
-            });
-            request.fail(function (jqXHR, textStatus) {
-                console.log(textStatus);
-            });
-        }
-
-        function negative(id) {
-            var request = $.ajax({
-                cache: false,
-                url: "/rate",
-                type: 'POST',
-                data: {
-                    'track_id': listArray[id],
-                    'rate_value': -1
-                }
-            });
-
-            request.done(function (data) {
-                loadData(data);
-            });
-            request.fail(function (jqXHR, textStatus) {
-                console.log(textStatus);
-            });
-        }
-
-        function loadData(result) {
-            $('tbody').empty();
-            for (var i in result.list) {
-                listArray[i] = result.list[i].track_id;
-                $('tbody').
-                    append('<tr>').
-                    append('<td><img src="' + result.list[i].track_image + '" width="150px" height="150px"/></td>').
-                    append('<td>' + result.list[i].track_name + '</td>').
-                    append('<td>' + result.list[i].track_artist + '</td>').
-                    append("<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='positive(" + i + ");'><span>thumb_up</span></button></td>").
-                    append("<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='negative(" + i + ");'><span>thumb_down</span></button></td>");
-                if (result.list[i].track_rates != null) {
-                    for (var j in result.list[i].track_rates) {
-                        if (result.list[i].track_rates[j].rate_user_id == result.user_id) {
-                            if (result.list[i].track_rates[j].rate_value == 1)
-                                $('tbody').append("<td class='emoji'> <img src='images/smile.png' width='20dp' height='20dp'>Gostei</td>");
-                            else if (result.list[i].track_rates[j].rate_value == -1)
-                                $('tbody').append("<td class='emoji'><img src='images/disguted.png' width='20dp' height='20dp'> Não Gostei</td>");
+            function loadData(result) {
+                $('tbody').empty();
+                for (var i in result.list) {
+                    listArray[i] = result.list[i].track_id;
+                    $('tbody').
+                        append('<tr>').
+                        append('<td><img src="' + result.list[i].track_image + '" width="150px" height="150px"/></td>').
+                        append('<td>' + result.list[i].track_name + '</td>').
+                        append('<td>' + result.list[i].track_artist + '</td>').
+                        append("<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='positive(" + i + ");'><span>thumb_up</span></button></td>").
+                        append("<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='negative(" + i + ");'><span>thumb_down</span></button></td>");
+                    if (result.list[i].track_rates != null) {
+                        for (var j in result.list[i].track_rates) {
+                            if (result.list[i].track_rates[j].rate_user_id == result.user_id) {
+                                if (result.list[i].track_rates[j].rate_value == 1)
+                                    $('tbody').append("<td class='emoji'> <img src='images/smile.png' width='20dp' height='20dp'>Gostei</td>");
+                                else if (result.list[i].track_rates[j].rate_value == -1)
+                                    $('tbody').append("<td class='emoji'><img src='images/disguted.png' width='20dp' height='20dp'> Não Gostei</td>");
+                            }
                         }
                     }
+                    $('tbody').append('</tr>');
                 }
-                $('tbody').append('</tr>');
             }
-        }
-    </script>
-</body>
+        </script>
+    </body>
 
-</html>
+    </html>

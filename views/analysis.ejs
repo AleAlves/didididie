@@ -1,0 +1,80 @@
+<% include ../header %>
+
+    <body>
+        <a href="/">
+            <button class="mdc-fab material-icons app-fab--absolute" aria-label="back">
+                <span class="mdc-fab__icon">
+                    home
+                </span>
+            </button>
+        </a>
+        <div class="container">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>
+                            Rate
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Artist
+                        </th>
+                        <th>
+                            Added by
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <script>
+            var listArray = Array();
+
+            $(document).ready(function () {
+                getPlayList();
+
+                function getPlayList() {
+                    var request = $.ajax({
+                        cache: false,
+                        url: "/analysis_playlist"
+                    });
+
+                    request.done(function (result) {
+                        console.log(result);
+                        loadData(result);
+                    });
+                    request.fail(function (jqXHR, textStatus) {
+                        console.log(textStatus);
+                    });
+                }
+
+            });
+
+            function loadData(result) {
+                $('tbody').empty();
+                var usersNames = new Array();
+                for (var i in result.users) {
+                    usersNames[result.users[i].user_id] = result.users[i].user_display_name;
+                }
+                for (var i in result.list) {
+                    listArray[i] = result.list[i].track_id;
+                    var position = parseInt(i) + 1;
+                    $('tbody').
+                        append('<tr>').
+                        append('<td>' + result.list[i].track_rates_avarage_rate + '</td>').
+                        append('<td>' + result.list[i].track_name + '</td>').
+                        append('<td>' + result.list[i].track_artist + '</td>').
+                        append('<td>' + usersNames[result.list[i].track_add_by] == undefined ? "Não Consta" : usersNames[result.list[i].track_add_by] + '</td>').
+                        append('<td>' + position + 'º</td>');
+                    $('tbody').append('</tr>');
+                }
+            }
+        </script>
+    </body>
+
+    </html>

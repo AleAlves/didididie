@@ -4,10 +4,14 @@
 <head>
     <title>Didididie</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+    <script src="http://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <style type="text/css">
         #login,
         #loggedin {
@@ -61,14 +65,33 @@
             text-align: center;
             align-self: initial
         }
+
+        .app-fab--thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .app-fab--absolute {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        @media(min-width: 1024px) {
+            .app-fab--absolute {
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+        }
     </style>
     <div class="container">
-        <div class="jumbotron">
+        <div class="jumbotron jumbotron-fluid">
             <h1>Didididiê</h1>
             <p></p>
         </div>
     </div>
 </head>
-
-<body>
-    <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>

@@ -5,72 +5,81 @@ module.exports = function (app) {
 
     var updateController = {
 
+        index: function (req, res) {
+            console.log("Index");
+        },
+
         getPlaylist: function (req, res) {
-            var state = generateRandomString(16);
-            // your application requests authorization
-            var list = null;
-            var access_token = req.query.access_token;
-            var options = {
-                url: 'https://api.spotify.com/v1/users/' + user_logged_id + '/playlists/',
-                headers: {
-                    'Authorization': 'Bearer ' + access_token
-                },
-                json: true
-            };
 
-            // use the access token to access the Spotify Web API
-            request.get(options, function (error, response, body) {
-                for (var i = 0; i < Object.keys(body.items).length; i++) {
-                    if (body.items[i].name == "Didididiê") {
-                        playlists.list_id = body.items[i].id;
-                        playlists.list_name = body.items[i].name;
-                        playlists.list_owner = body.items[i].owner.display_name;
-                        playlists.list_owner_id = body.items[i].owner.id;
-                        console.log(playlists.list_id + " - " + playlists.list_owner_id);
-                    }
-                }
+            if (req.session.user != null) {
 
+                var state = generateRandomString(16);
+                // your application requests authorization
+                var list = null;
+                var access_token = req.query.access_token;
                 var options = {
-                    url: '	https://api.spotify.com/v1/users/' + playlists.list_owner_id + '/playlists/' + playlists.list_id + '/tracks?market=US',
+                    url: 'https://api.spotify.com/v1/users/' + user_logged_id + '/playlists/',
                     headers: {
                         'Authorization': 'Bearer ' + access_token
                     },
                     json: true
                 };
 
+                // use the access token to access the Spotify Web API
                 request.get(options, function (error, response, body) {
-                    data = new Array();
-                    data.push(body);
-                    readNext(body);
-                    function readNext(body) {
-                        if (body.next != null) {
-                            var options = {
-                                url: body.next,
-                                headers: {
-                                    'Authorization': 'Bearer ' + access_token
-                                },
-                                json: true
-                            };
-                            request.get(options, function (error, response, body) {
-                                data.push(body);
-                                if (body.next != null) {
-                                    readNext(body);
-                                }
-                                else {
-                                    list = readTextFile(data, user_logged_id);
-                                    res.send({'status':'Playlist Atualizada'});
-                                }
-                            });
-                        }
-                        else {
-                            list = readTextFile(data, user_logged_id);
-                            res.send({'status':'Playlist Atualizada'});
+                    for (var i = 0; i < Object.keys(body.items).length; i++) {
+                        if (body.items[i].name == "Didididiê") {
+                            playlists.list_id = body.items[i].id;
+                            playlists.list_name = body.items[i].name;
+                            playlists.list_owner = body.items[i].owner.display_name;
+                            playlists.list_owner_id = body.items[i].owner.id;
+                            console.log(playlists.list_id + " - " + playlists.list_owner_id);
                         }
                     }
-                });
-            });
 
-            // we can also pass the token to the browser to make requests from there
+                    var options = {
+                        url: '	https://api.spotify.com/v1/users/' + playlists.list_owner_id + '/playlists/' + playlists.list_id + '/tracks?market=US',
+                        headers: {
+                            'Authorization': 'Bearer ' + access_token
+                        },
+                        json: true
+                    };
+
+                    request.get(options, function (error, response, body) {
+                        data = new Array();
+                        data.push(body);
+                        readNext(body);
+                        function readNext(body) {
+                            if (body.next != null) {
+                                var options = {
+                                    url: body.next,
+                                    headers: {
+                                        'Authorization': 'Bearer ' + access_token
+                                    },
+                                    json: true
+                                };
+                                request.get(options, function (error, response, body) {
+                                    data.push(body);
+                                    if (body.next != null) {
+                                        readNext(body);
+                                    }
+                                    else {
+                                        list = readTextFile(data, user_logged_id);
+                                        res.send({ 'status': 'Playlist Atualizada' });
+                                    }
+                                });
+                            }
+                            else {
+                                list = readTextFile(data, user_logged_id);
+                                res.send({ 'status': 'Playlist Atualizada' });
+                            }
+                        }
+                    });
+                });
+            }
+            else{
+                res.redirect('/');
+            }
         }
     };
 
@@ -95,8 +104,7 @@ module.exports = function (app) {
                 trackObject.track_add_by = playlist[i].items[j].added_by.id;
                 trackObject.track_image = playlist[i].items[j].track.album.images[0].url;
                 trackObject.track_artist = playlist[i].items[j].track.album.artists[0].name;
-                trackObject.track_like = 0;
-                trackObject.track_dislike = 0;
+                trackObject.track_rates_avarage_rate = 0;
                 data.push(trackObject);
                 count++;
             }

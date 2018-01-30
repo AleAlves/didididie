@@ -6,22 +6,31 @@ module.exports = function (app) {
 
     var ratingController = {
 
-        loadPlaylist: function (req, res) {
-            getPlayList(req, res);
+        index: function (req, res) {
+            if (req.session.user != null) {
+                res.render('rate/rating');
+            }
+            else {
+                res.redirect('/');
+            }
         },
 
         rateTrack: function (req, res) {
-            console.log("Sesison");
-            console.log(req.session);
-            rateTrack(req, res, req.body);
+            if (req.session.user != null) {
+                rateTrack(req, res, req.body);
+            }
+            else {
+                res.redirect('/');
+            }
         },
 
-        teste: function (req, res) {
-            res.render('rate/rating');
-        },
-
-        getTeste: function (req, res) {
-            sendPlayList(req, res);
+        getTracks: function (req, res) {
+            if (req.session.user != null) {
+                sendPlayList(req, res);
+            }
+            else {
+                res.redirect('/');
+            }
         }
 
     }
@@ -52,27 +61,27 @@ module.exports = function (app) {
                                     res.send("Falhou -1");
                                 }
                                 else {
-                                    console.log("saved");
-                                    sendPlayList(req, res);
+                                    console.log("Opiniao computada");
+                                    updateAvaragerate(req, res, trackResponse);
                                 }
                             });
                         }
                         else {
                             if (trackRateResponse.track_rates[0].rate_value != body.rate_value) {
                                 trackRateResponse.track_rates[0].rate_value = body.rate_value
-                                trackRateResponse.save(function (error, trackRateResponse) {
+                                trackRateResponse.save(function (error, trackResponse) {
                                     if (error) {
                                         console.log("Error - resave rate - step 2" + error);
                                         res.send("Falhou 2");
                                     }
                                     else {
-                                        console.log("resaved");
-                                        sendPlayList(req, res);
+                                        console.log("Opiniao atualizada");
+                                        updateAvaragerate(req, res, trackResponse);
                                     }
                                 });
                             }
                             else {
-                                console.log("Opiniao computada");
+                                console.log("Opiniao já computada");
                                 sendPlayList(req, res);
                             }
                         }
@@ -86,24 +95,39 @@ module.exports = function (app) {
         });
     }
 
+    function updateAvaragerate(req, res, track) {
+        console.log("Track");
+        console.log(track);
+        var rates = 0;
+        var ratesCount = 0;
+        for (var i = 0; i < track.track_rates.length; i++) {
+            rates += track.track_rates[i].rate_value;
+            ratesCount++;
+            console.log("rate: " + rates);
+        }
+        rates = rates / ratesCount;
+        console.log("Result: " + rates);
+        track.track_rates_avarage_rate = rates;
+        track.save(function (error, trackResponse) {
+            if (error) {
+                console.log("Error - resave rate - step 2" + error);
+                res.send("Falhou 2");
+            }
+            else {
+                console.log("Opiniao media atualizada");
+                sendPlayList(req, res);
+            }
+        });
+    }
+
     function sendPlayList(req, res) {
         track.find({}).select({}).exec(function (error, callback) {
             if (error) {
                 console.log("Error" + error);
             }
             else {
+                console.log("Esteve aqui");
                 res.send({ 'user_id': req.session.user.user_id, 'list': callback });
-            }
-        });
-    }
-
-    function getPlayList(req, res) {
-        track.find({}).select({}).exec(function (error, callback) {
-            if (error) {
-                console.log("Error" + error);
-            }
-            else {
-                res.render('rate/rate', { 'user_id': req.session.user.user_id, 'list': callback });
             }
         });
     }
