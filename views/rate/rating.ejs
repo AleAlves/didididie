@@ -67,6 +67,7 @@
                 });
 
                 request.done(function (data) {
+                    console.log("Done");
                     loadData(data);
                 });
                 request.fail(function (jqXHR, textStatus) {
@@ -86,6 +87,7 @@
                 });
 
                 request.done(function (data) {
+                    console.log("Done");
                     loadData(data);
                 });
                 request.fail(function (jqXHR, textStatus) {
@@ -104,7 +106,7 @@
                         append('<td>' + result.list[i].track_artist + '</td>').
                         append("<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='positive(" + i + ");'><span>thumb_up</span></button></td>").
                         append("<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='negative(" + i + ");'><span>thumb_down</span></button></td>");
-                    if (result.list[i].track_rates != null) {
+                    if (result.list[i].track_rates != undefined) {
                         for (var j in result.list[i].track_rates) {
                             if (result.list[i].track_rates[j].rate_user_id == result.user_id) {
                                 if (result.list[i].track_rates[j].rate_value == 1)

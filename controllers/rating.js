@@ -67,22 +67,27 @@ module.exports = function (app) {
                             });
                         }
                         else {
-                            if (trackRateResponse.track_rates[0].rate_value != body.rate_value) {
-                                trackRateResponse.track_rates[0].rate_value = body.rate_value
-                                trackRateResponse.save(function (error, trackResponse) {
-                                    if (error) {
-                                        console.log("Error - resave rate - step 2" + error);
-                                        res.send("Falhou 2");
+                            for (var i in trackRateResponse.track_rates) {
+                                if (trackRateResponse.track_rates[i].rate_user_id == req.session.user.user_id) {
+                                    if (trackRateResponse.track_rates[i].rate_value != body.rate_value) {
+                                        trackRateResponse.track_rates[i].rate_value = body.rate_value;
+                                        trackRateResponse.save(function (error, trackResponse) {
+                                            if (error) {
+                                                console.log("Error - resave rate - step 2" + error);
+                                                res.send("Falhou 2");
+                                            }
+                                            else {
+                                                console.log("Opiniao atualizada");
+                                                updateAvaragerate(req, res, trackResponse);
+                                            }
+                                        });
                                     }
                                     else {
-                                        console.log("Opiniao atualizada");
-                                        updateAvaragerate(req, res, trackResponse);
+                                        console.log("Opiniao já computada");
+                                        sendPlayList(req, res);
                                     }
-                                });
-                            }
-                            else {
-                                console.log("Opiniao já computada");
-                                sendPlayList(req, res);
+                                    break;
+                                }
                             }
                         }
                     });
