@@ -27,6 +27,9 @@
                         <th>
 
                         </th>
+                        <th>
+                            Status
+                        </th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -106,14 +109,19 @@
                         append('<td>' + result.list[i].track_artist + '</td>').
                         append("<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='positive(" + i + ");'><span>thumb_up</span></button></td>").
                         append("<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='negative(" + i + ");'><span>thumb_down</span></button></td>");
-                    if (result.list[i].track_rates != undefined) {
+                    if (result.list[i].track_rates != "") {
+                        var rated = false;
                         for (var j in result.list[i].track_rates) {
                             if (result.list[i].track_rates[j].rate_user_id == result.user_id) {
+                                rated = true;
                                 if (result.list[i].track_rates[j].rate_value == 1)
-                                    $('tbody').append("<td class='emoji'> <img src='images/smile.png' width='20dp' height='20dp'>Gostei</td>");
+                                    $('tbody').append("<td> <img src='images/smile.png' width='20dp' height='20dp'>Gostei</td>");
                                 else if (result.list[i].track_rates[j].rate_value == -1)
-                                    $('tbody').append("<td class='emoji'><img src='images/disguted.png' width='20dp' height='20dp'> Não Gostei</td>");
+                                    $('tbody').append("<td><img src='images/disguted.png' width='20dp' height='20dp'> Não Gostei</td>");
                             }
+                        }
+                        if (!rated) {
+                            $('tbody').append("<td><img src='images/alert.png' width='20dp' height='20dp'></td>");
                         }
                     }
                     $('tbody').append('</tr>');
