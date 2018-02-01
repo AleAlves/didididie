@@ -69,13 +69,41 @@
                     var position = parseInt(i) + 1;
                     $('tbody').
                         append('<tr>').
-                        append('<td>' + result.list[i].track_rates_avarage_rate + '</td>').
+                        append('<td>' + result.list[i].track_rates_avarage_rate.toFixed(2) + '</td>').
                         append('<td>' + result.list[i].track_rates.length + '</td>').
                         append('<td>' + result.list[i].track_name + '</td>').
                         append('<td>' + result.list[i].track_artist + '</td>').
                         append('<td>' + usersNames[result.list[i].track_add_by] == undefined ? "Não Consta" : usersNames[result.list[i].track_add_by] + '</td>').
-                        append('<td>' + position + 'º</td>');
-                    $('tbody').append('</tr>');
+                        append('<td>' + position + 'º</td>').
+                        append('</tr><tr>');
+                    var likes = "";
+                    for (var j in result.list[i].track_rates) {
+                        if (result.list[i].track_rates[j].rate_value == 1) {
+                            likes += usersNames[result.list[i].track_rates[j].rate_user_id] + ' - ';
+                        }
+                    }
+
+                    if (likes != "") {
+                        likes = '<td class="like_dislike_td" colspan="3">' + likes + '</td>';
+                        $('tbody').
+                            append('<td><img src="images/smile.png" width="20dp" height="20dp"></td>').
+                            append(likes).
+                            append('</tr><tr>');
+                    }
+                    var dislikes = "";
+                    for (var j in result.list[i].track_rates) {
+                        if (result.list[i].track_rates[j].rate_value == -1) {
+                            dislikes += usersNames[result.list[i].track_rates[j].rate_user_id] + ' - ';
+                        }
+                    }
+
+                    if (dislikes != "") {
+                        dislikes = '<td class="like_dislike_td" colspan="3">' + dislikes + '</td>';
+                        $('tbody').
+                            append('<td><img src="images/disguted.png" width="20dp" height="20dp"></td>').
+                            append(dislikes).
+                            append('</tr>');
+                    }
                     console.log(result.list[i]);
                 }
             }
