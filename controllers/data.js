@@ -27,6 +27,7 @@ module.exports = function (app) {
     };
 
     function getTopRated(req, res) {
+        var usersData = new Array();
         track.find({}).sort({
             track_rates_avarage_rate: -1
         }).select({}).exec(function (error, trackList) {
@@ -35,6 +36,29 @@ module.exports = function (app) {
                     res.send({ 'list': trackList });
                 }
                 else {
+                    user.find({}).select({}).exec(function (error, users) {
+                        if (error) {
+                            res.send('EROR');
+                        }
+                        else {
+                            for (var i in users) {
+                                var sum = 0;
+                                var count = 0;
+                                for (var j in trackList) {
+                                    for (var k in trackList[i].track_rates) {
+                                        if (trackList[i].track_rates[k].rate_user_id == users[i].user_id) {
+                                            sum += trackList[i].track_rates[k].rate_value;
+                                            count++;
+                                        }
+                                    }
+                                }
+                                console.log(" Count: "+count );
+                                console.log(" Sum: "+sum );
+                                console.log(" avarage:"+ sum / count);
+                            }
+
+                        }
+                    });
                     res.send({ 'users': usersList, 'list': trackList });
                 }
             });

@@ -9,6 +9,31 @@ module.exports = function (app) {
             console.log("Index");
         },
 
+        updateUser: function (req, res) {
+            track.find({ 'track_rates.rate_user_id': 'luziamed' }).select({}).exec(function (error, callback) {
+                if (error) {
+                    console.log("Error" + error);
+                }
+                else {
+                    console.log("Satrt");
+                    for (var i in callback) {
+                        for (var j in callback[i].track_rates)
+                            if (callback[i].track_rates[j].rate_user_id == 'luziamed') {
+                                callback[i].track_rates[j].rate_user_id = 'luziamd';
+                                callback[i].save(function (error, callback) {
+                                    if (error) {
+
+                                    }
+                                    else {
+                                        console.log(callback);
+                                    }
+                                });
+                            }
+                    }
+                }
+            });
+        },
+
         getPlaylist: function (req, res) {
 
             if (req.session.user != null) {
@@ -65,19 +90,19 @@ module.exports = function (app) {
                                     }
                                     else {
                                         list = readTextFile(data, user_logged_id);
-                                        res.send({ 'status': 'Playlist Atualizada' });
+                                        res.send({ 'status': 'Playlist Atualizada', 'list': body });
                                     }
                                 });
                             }
                             else {
                                 list = readTextFile(data, user_logged_id);
-                                res.send({ 'status': 'Playlist Atualizada' });
+                                res.send({ 'status': 'Playlist Atualizada', 'list': body });
                             }
                         }
                     });
                 });
             }
-            else{
+            else {
                 res.redirect('/');
             }
         }

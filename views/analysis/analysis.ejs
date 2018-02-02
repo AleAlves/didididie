@@ -63,6 +63,7 @@
                 var usersNames = new Array();
                 for (var i in result.users) {
                     usersNames[result.users[i].user_id] = result.users[i].user_display_name;
+                    console.log( result.users[i]);
                 }
                 for (var i in result.list) {
                     listArray[i] = result.list[i].track_id;
@@ -73,7 +74,7 @@
                         append('<td>' + result.list[i].track_rates.length + '</td>').
                         append('<td>' + result.list[i].track_name + '</td>').
                         append('<td>' + result.list[i].track_artist + '</td>').
-                        append('<td>' + usersNames[result.list[i].track_add_by] == undefined ? "Não Consta" : usersNames[result.list[i].track_add_by] + '</td>').
+                        append('<td>' + usersNames[result.list[i].track_add_by] + '</td>').
                         append('<td>' + position + 'º</td>').
                         append('</tr><tr>');
                     var likes = "";
@@ -104,7 +105,6 @@
                             append(dislikes).
                             append('</tr>');
                     }
-                    console.log(result.list[i]);
                 }
             }
         </script>

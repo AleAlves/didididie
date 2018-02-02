@@ -11,6 +11,7 @@ module.exports = function (app) {
   app.get('/callback', authController.callback);
   app.get('/refresh_token', authController.refresh_token);
   app.get('/update', updateController.getPlaylist);
+  // app.get('/update_user', updateController.updateUser);
   app.post('/rate', ratingController.rateTrack);
   app.get('/rating', ratingController.getTracks);
   app.get('/rating_playlist', ratingController.index);

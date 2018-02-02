@@ -141,6 +141,7 @@
                         });
 
                         request.done(function (data) {
+                            console.log(data.list);
                             alert(data.status);
                         });
                         request.fail(function (jqXHR, textStatus) {

@@ -70,7 +70,7 @@ module.exports = function (app) {
                             console.log(body);
                             var user_object = new Object();
                             user_object.user_id = body.id;
-                            user_object.user_display_name = body.display_name;
+                            user_object.user_display_name = body.display_name != null && body.display_name != undefined ? body.display_name :  body.id;
                             user_object.user_email = body.email;
                             user_logged.findOne({ user_id: body.id },
                                 function (error, user_response) {
