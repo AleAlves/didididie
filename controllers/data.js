@@ -54,11 +54,16 @@ module.exports = function (app) {
                                 console.log(" Count: " + count);
                                 console.log(" Sum: " + sum.toFixed(2));
                                 console.log(" Avarage:" + (sum / count).toFixed(2));
+                                var data = new Object();
+                                data.user_name = users[i].user_display_name;
+                                data.user_tracks_count = count;
+                                data.user_avarage_rate = rate;
+                                usersData.push(data);
                             }
 
                         }
                     });
-                    res.send({ 'users': usersList, 'list': trackList });
+                    res.send({ 'users': usersList, 'list': trackList, 'user_data': usersData });
                 }
             });
         });
