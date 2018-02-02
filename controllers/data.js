@@ -46,7 +46,7 @@ module.exports = function (app) {
                                 var count = 0;
                                 for (var j in trackList) {
                                     if (trackList[j].track_add_by == users[i].user_id) {
-                                        sum += trackList[i].track_rates_avarage_rate[k].rate_value;
+                                        sum += trackList[j].track_rates_avarage_rate;
                                         count++;
                                     }
                                 }
