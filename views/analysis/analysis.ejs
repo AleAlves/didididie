@@ -64,7 +64,7 @@
             function loadData(result) {
                 $('li').empty();
                 for(var i in result.user_data){
-                    $('li').append('<ul>'+result.user_data[i].user_name+' score: '+ result.user_data[i].user_avarage_rate +'</ul>');
+                    $('li').append('<ul>'+result.user_data[i].user_name+', score: '+ result.user_data[i].user_avarage_rate +'</ul>');
                 }
 
                 $('tbody').empty();
