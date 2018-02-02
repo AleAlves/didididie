@@ -46,7 +46,7 @@ module.exports = function (app) {
                                 var count = 0;
                                 for (var j in trackList) {
                                     for (var k in trackList[i].track_rates) {
-                                        if (trackList[i].track_rates[k].rate_user_id == users[i].user_id) {
+                                        if (trackList[i].track_add_by == users[i].user_id) {
                                             sum += trackList[i].track_rates[k].rate_value;
                                             count++;
                                         }
