@@ -45,11 +45,9 @@ module.exports = function (app) {
                                 var sum = 0;
                                 var count = 0;
                                 for (var j in trackList) {
-                                    for (var k in trackList[i].track_rates) {
-                                        if (trackList[i].track_add_by == users[i].user_id) {
-                                            sum += trackList[i].track_rates[k].rate_value;
-                                            count++;
-                                        }
+                                    if (trackList[j].track_add_by == users[i].user_id) {
+                                        sum += trackList[i].track_rates_avarage_rate[k].rate_value;
+                                        count++;
                                     }
                                 }
                                 console.log(" Count: "+count );
