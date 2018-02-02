@@ -60,10 +60,9 @@ module.exports = function (app) {
                                 data.user_avarage_rate = rate;
                                 usersData.push(data);
                             }
-
+                            res.send({ 'users': usersList, 'list': trackList, 'user_data': usersData });
                         }
                     });
-                    res.send({ 'users': usersList, 'list': trackList, 'user_data': usersData });
                 }
             });
         });
