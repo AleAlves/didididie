@@ -50,9 +50,10 @@ module.exports = function (app) {
                                         count++;
                                     }
                                 }
+                                console.log(" User: "+ users[i].user_display_name);
                                 console.log(" Count: "+count );
                                 console.log(" Sum: "+sum );
-                                console.log(" avarage:"+ sum / count);
+                                console.log(" Avarage:"+ sum / count);
                             }
 
                         }
