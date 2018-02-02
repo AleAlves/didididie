@@ -56,8 +56,8 @@ module.exports = function (app) {
                                 console.log(" Avarage:" + (sum / count).toFixed(2));
                                 var data = new Object();
                                 data.user_name = users[i].user_display_name;
-                                data.user_tracks_count = count;
-                                data.user_avarage_rate = rate;
+                                data.user_tracks_count = sum.toFixed(2);
+                                data.user_avarage_rate = (sum / count).toFixed(2);
                                 usersData.push(data);
                             }
                             res.send({ 'users': usersList, 'list': trackList, 'user_data': usersData });
