@@ -31,6 +31,10 @@ module.exports = function (app) {
             else {
                 res.redirect('/');
             }
+        },
+
+        delete: function(req, res){
+            
         }
 
     }

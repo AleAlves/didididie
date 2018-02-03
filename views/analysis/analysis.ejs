@@ -9,9 +9,31 @@
             </button>
         </a>
         <div class="container">
-            <li>
+            <h3>
+                <span>PlayList Score: </span>
+                <span id="score"></span>
+            </h3>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>
 
-            </li>
+                        </th>
+                        <th>
+                            User
+                        </th>
+                        <th>
+                            Musics
+                        </th>
+                        <th>
+                            Score
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="users"></tbody>
+            </table>
+        </div>
+        <div class="container">
             <table class="table table-condensed">
                 <thead>
                     <tr>
@@ -33,9 +55,12 @@
                         <th>
                             Ranking
                         </th>
+                        <th>
+                            Action
+                        </th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody id="tracks"></tbody>
             </table>
         </div>
         <script>
@@ -62,21 +87,43 @@
             });
 
             function loadData(result) {
-                $('li').empty();
-                for(var i in result.user_data){
-                    $('li').append('<ul>'+result.user_data[i].user_name+', score: '+ result.user_data[i].user_avarage_rate+', musics: '+ result.user_data[i].user_tracks_count+'</ul>');
+
+                $('#score').empty();
+                $('#score').append(result.playlist_data.total_avarage_rate);
+
+                $('#users').empty();
+                for (var i in result.user_data) {
+                    try {
+                        var url = result.user_data[i].user_image_url;
+                        if (url === undefined)
+                            url = 'images/spotify.png';
+                        $('#users').
+                            append('<tr>').
+                            append('<td><img src="' + url + '" width="50px" height="50px"></td>').
+                            append('<td>' + result.user_data[i].user_name + '</td>').
+                            append('<td>' + result.user_data[i].user_tracks_count + '</td>').
+                            append('<td>' + result.user_data[i].user_avarage_rate + '</td>').
+                            append('</tr>');
+                    } catch (e) {
+
+                    }
                 }
 
-                $('tbody').empty();
+                $('#tracks').empty();
                 var usersNames = new Array();
                 for (var i in result.users) {
                     usersNames[result.users[i].user_id] = result.users[i].user_display_name;
-                    console.log( result.users[i]);
                 }
                 for (var i in result.list) {
                     listArray[i] = result.list[i].track_id;
                     var position = parseInt(i) + 1;
-                    $('tbody').
+                    var action = null;
+                    var rate = result.list[i].track_rates_avarage_rate.toFixed(2);
+                    if (rate < 0.00)
+                        action = "<button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='deleteTrack(" + i + ");'><span>delete</span></button>";
+                    else
+                        action = "";
+                    $('#tracks').
                         append('<tr>').
                         append('<td>' + result.list[i].track_rates_avarage_rate.toFixed(2) + '</td>').
                         append('<td>' + result.list[i].track_rates.length + '</td>').
@@ -84,6 +131,7 @@
                         append('<td>' + result.list[i].track_artist + '</td>').
                         append('<td>' + usersNames[result.list[i].track_add_by] + '</td>').
                         append('<td>' + position + 'º</td>').
+                        append("<td>" + action + "</td>").
                         append('</tr><tr>');
                     var likes = "";
                     for (var j in result.list[i].track_rates) {
@@ -93,8 +141,8 @@
                     }
 
                     if (likes != "") {
-                        likes = '<td class="like_dislike_td" colspan="3">' + likes + '</td>';
-                        $('tbody').
+                        likes = '<td class="like_dislike_td" colspan="4">' + likes + '</td>';
+                        $('#tracks').
                             append('<td><img src="images/smile.png" width="20dp" height="20dp"></td>').
                             append(likes).
                             append('</tr><tr>');
@@ -107,13 +155,32 @@
                     }
 
                     if (dislikes != "") {
-                        dislikes = '<td class="like_dislike_td" colspan="3">' + dislikes + '</td>';
-                        $('tbody').
+                        dislikes = '<td class="like_dislike_td" colspan="4">' + dislikes + '</td>';
+                        $('#tracks').
                             append('<td><img src="images/disguted.png" width="20dp" height="20dp"></td>').
                             append(dislikes).
                             append('</tr>');
                     }
                 }
+            }
+
+            function deleteTrack(id) {
+                var request = $.ajax({
+                    cache: false,
+                    url: "/delete",
+                    type: 'POST',
+                    data: {
+                        'track_uri': listArray[id]
+                    }
+                });
+
+                request.done(function (data) {
+                    console.log("Done");
+                    loadData(data);
+                });
+                request.fail(function (jqXHR, textStatus) {
+                    console.log(textStatus);
+                });
             }
         </script>
     </body>

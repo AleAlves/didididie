@@ -5,7 +5,8 @@ module.exports = function (app) {
     var user = schema({
         user_id: { type: String, unique: true, riquered: true },
         user_display_name: { type: String, required: false },
-        user_email: { type: String, riquered: true }
+        user_email: { type: String, riquered: true },
+        user_image_url: {type: String, riquered: false}
     });
 
     return db.model('user', user);

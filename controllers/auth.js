@@ -20,7 +20,7 @@ module.exports = function (app) {
             var state = generateRandomString(16);
             res.cookie(stateKey, state);
             // your application requests authorization
-            var scope = 'user-read-private user-read-email playlist-read-collaborative';
+            var scope = 'user-read-private user-read-email playlist-read-collaborative playlist-modify-public playlist-modify-private';
             res.redirect('https://accounts.spotify.com/authorize?' +
                 querystring.stringify({ response_type: 'code', client_id: client_id, scope: scope, redirect_uri: redirect_uri, state: state }));
         },
@@ -31,7 +31,7 @@ module.exports = function (app) {
         },
 
         callback: function (req, res) {
-          
+
             var code = req.query.code || null;
             var state = req.query.state || null;
             var storedState = req.cookies ? req.cookies[stateKey] : null;
@@ -70,8 +70,9 @@ module.exports = function (app) {
                             console.log(body);
                             var user_object = new Object();
                             user_object.user_id = body.id;
-                            user_object.user_display_name = body.display_name != null && body.display_name != undefined ? body.display_name :  body.id;
+                            user_object.user_display_name = body.display_name != null && body.display_name != undefined ? body.display_name : body.id;
                             user_object.user_email = body.email;
+                            user_object.user_image_url = body.images[0].url;
                             user_logged.findOne({ user_id: body.id },
                                 function (error, user_response) {
                                     try {
@@ -89,7 +90,17 @@ module.exports = function (app) {
                                             });
                                         }
                                         else {
-                                            console.log("Usuario existe");
+
+                                            if (user_response.user_display_name != body.display_name)
+                                                user_response.user_display_name = body.display_name;
+                                            if (user_response.user_image_url != body.images[0].url)
+                                                user_response.user_image_url = body.images[0].url;
+                                            if (user_response.user_email != body.email)
+                                                user_response.user_email = body.email;
+
+                                            user_response.save(function (req, res) {
+
+                                            })
                                         }
                                         req.session.user = user_object;
                                         console.log(req.session.user);

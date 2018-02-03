@@ -15,6 +15,7 @@ module.exports = function (app) {
         track_image: { type: String, required: true },
         track_add_by: { type: String, required: false },
         track_rates_avarage_rate: { type: Number, required: true },
+        track_uri: { type: String, required: true },
         track_rates: [rate]
     }, { usePushEach: true });
 

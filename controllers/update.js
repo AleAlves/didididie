@@ -58,7 +58,8 @@ module.exports = function (app) {
                             playlists.list_name = body.items[i].name;
                             playlists.list_owner = body.items[i].owner.display_name;
                             playlists.list_owner_id = body.items[i].owner.id;
-                            console.log(playlists.list_id + " - " + playlists.list_owner_id);
+                            console.log("Body");
+                            console.log(body);
                         }
                     }
 
@@ -96,6 +97,8 @@ module.exports = function (app) {
                             }
                             else {
                                 list = readTextFile(data, user_logged_id);
+                                console.log('Body');
+                                console.log(body);
                                 res.send({ 'status': 'Playlist Atualizada', 'list': body });
                             }
                         }
@@ -125,6 +128,7 @@ module.exports = function (app) {
             for (var j = 0; j < playlist[i].items.length; j++) {
                 var trackObject = new Object();
                 trackObject.track_id = playlist[i].items[j].track.id;
+                trackObject.track_uri = playlist[i].items[j].track.uri;
                 trackObject.track_name = playlist[i].items[j].track.name;
                 trackObject.track_add_by = playlist[i].items[j].added_by.id;
                 trackObject.track_image = playlist[i].items[j].track.album.images[0].url;
@@ -132,6 +136,8 @@ module.exports = function (app) {
                 trackObject.track_rates_avarage_rate = 0;
                 data.push(trackObject);
                 count++;
+                console.log("Body- tracks");
+                console.log(playlist[i].items[j]);
             }
         }
         trackHandler(data, 0);
@@ -160,7 +166,14 @@ module.exports = function (app) {
                             });
                         }
                         else {
-                            trackHandler(trackObject, ++index);
+                            trackResponse.track_uri = trackObject[index].track_uri;
+                            trackResponse.save(function(error, trackResponse){
+                                if(error){
+                                    
+                                }else{
+                                    trackHandler(trackObject, ++index);
+                                }
+                            });
                         }
                     } catch (e) {
                         console.log("db error");
