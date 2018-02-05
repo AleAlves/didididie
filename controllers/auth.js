@@ -72,7 +72,7 @@ module.exports = function (app) {
                             user_object.user_id = body.id;
                             user_object.user_display_name = body.display_name != null && body.display_name != undefined ? body.display_name : body.id;
                             user_object.user_email = body.email;
-                            user_object.user_image_url = body.images[0].url;
+                            user_object.user_image_url = body.images.length > 0 ? body.images[0].url : '';
                             user_logged.findOne({ user_id: body.id },
                                 function (error, user_response) {
                                     try {
