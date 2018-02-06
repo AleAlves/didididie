@@ -2,7 +2,7 @@
 
     <body>
         <div class="footer-search">
-            <input type="text" id="search" class="search-box" placeholder="search"></input>
+            <input type="text" id="search" class="search-box" placeholder="search" autocomplete="off"></input>
             <a href="/">
                 <button class="mdc-fab material-icons app-fab--absolute" aria-label="back">
                     <span class="mdc-fab__icon">
@@ -105,6 +105,7 @@
 
             function loadData(result) {
                 console.log("reload");
+                $('#search').empty();
                 $('tbody').empty();
                 for (var i in result.list) {
                     listArray[i] = result.list[i].track_id;
