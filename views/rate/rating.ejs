@@ -8,19 +8,8 @@
                 </span>
             </button>
         </a>
-        <div class="container" id="realTimeContents">
-            <div class="ui-block-a">
-                <input name="text-12" id="text-12" value="" type="text" class="textSearchvalue_h" />
-            </div>
-            <div class="ui-block-b">
-                <a href="#" class="searchButtonClickText_h">Search</a>
-            </div>
-            <div class="ui-block-c">
-                <a href="#" class="next_h">Next</a>
-            </div>
-            <div class="ui-block-d">
-                <a href="#" class="previous_h">Previous</a>
-            </div>
+        <div class="container">
+            <input type="text" id="search" class="search-box" placeholder=" live search"></input>
             <table class="table table-condensed">
                 <thead>
                     <tr>
@@ -114,97 +103,41 @@
                 $('tbody').empty();
                 for (var i in result.list) {
                     listArray[i] = result.list[i].track_id;
-                    $('tbody').
-                        append('<tr>').
-                        append('<td><img src="' + result.list[i].track_image + '" width="150px" height="150px"/></td>').
-                        append('<td>' + result.list[i].track_name + '</td>').
-                        append('<td>' + result.list[i].track_artist + '</td>').
-                        append("<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='positive(" + i + ");'><span>thumb_up</span></button></td>").
-                        append("<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='negative(" + i + ");'><span>thumb_down</span></button></td>");
+                    var line = null;
+                    line += '<tr>';
+                    line += '<td><img src="' + result.list[i].track_image + '" width="150px" height="150px"/></td>';
+                    line += '<td>' + result.list[i].track_name + '</td>';
+                    line += '<td>' + result.list[i].track_artist + '</td>';
+                    line += "<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='positive(" + i + ");'><span>thumb_up</span></button></td>";
+                    line += "<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='negative(" + i + ");'><span>thumb_down</span></button></td>";
                     if (result.list[i].track_rates != "") {
                         var rated = false;
                         for (var j in result.list[i].track_rates) {
                             if (result.list[i].track_rates[j].rate_user_id == result.user_id) {
                                 rated = true;
                                 if (result.list[i].track_rates[j].rate_value == 1)
-                                    $('tbody').append("<td> <img src='images/smile.png' width='20dp' height='20dp'>Gostei</td>");
+                                    line += "<td> <img src='images/smile.png' width='20dp' height='20dp'>Gostei</td>";
                                 else if (result.list[i].track_rates[j].rate_value == -1)
-                                    $('tbody').append("<td><img src='images/disguted.png' width='20dp' height='20dp'> Não Gostei</td>");
+                                    line += "<td><img src='images/disguted.png' width='20dp' height='20dp'> Não Gostei</td>";
                             }
                         }
                         if (!rated) {
-                            $('tbody').append("<td><img src='images/alert.png' width='20dp' height='20dp'></td>");
+                            line += "<td><img src='images/alert.png' width='20dp' height='20dp'></td>";
                         }
                     }
-                    $('tbody').append('</tr>');
+                    line += '</tr>';
+                    $('tbody').append(line);
                 }
             }
 
-            function searchAndHighlight(searchTerm, selector) {
-                if (searchTerm) {
-                    var selector = selector || "#realTimeContents"; //use body as selector if none provided
-                    var searchTermRegEx = new RegExp(searchTerm, "ig");
-                    var matches = $(selector).text().match(searchTermRegEx);
-                    if (matches != null && matches.length > 0) {
-                        $('.highlighted').removeClass('highlighted'); //Remove old search highlights 
-
-                        //Remove the previous matches
-                        $span = $('#realTimeContents span');
-                        $span.replaceWith($span.html());
-
-                        if (searchTerm === "&") {
-                            searchTerm = "&amp;";
-                            searchTermRegEx = new RegExp(searchTerm, "ig");
-                        }
-                        $(selector).html($(selector).html().replace(searchTermRegEx, "<span class='match'>" + searchTerm + "</span>"));
-                        $('.match:first').addClass('highlighted');
-
-                        var i = 0;
-
-                        $('.next_h').off('click').on('click', function () {
-                            i++;
-
-                            if (i >= $('.match').length) i = 0;
-
-                            $('.match').removeClass('highlighted');
-                            $('.match').eq(i).addClass('highlighted');
-                            $('.ui-mobile-viewport').animate({
-                                scrollTop: $('.match').eq(i).offset().top
-                            }, 300);
-                        });
-                        $('.previous_h').off('click').on('click', function () {
-
-                            i--;
-
-                            if (i < 0) i = $('.match').length - 1;
-
-                            $('.match').removeClass('highlighted');
-                            $('.match').eq(i).addClass('highlighted');
-                            $('.ui-mobile-viewport').animate({
-                                scrollTop: $('.match').eq(i).offset().top
-                            }, 300);
-                        });
-
-
-
-
-                        if ($('.highlighted:first').length) { //if match found, scroll to where the first one appears
-                            $(window).scrollTop($('.highlighted:first').position().top);
-                        }
-                        return true;
-                    }
+            $("#search").on("keyup", function () {
+                var value = $(this).val();
+                if (value != '') {
+                    $("table tbody tr").hide();
+                } else {
+                    $("table tbody tr").show();
                 }
-                return false;
-            }
-
-            $(document).on('click', '.searchButtonClickText_h', function (event) {
-
-                $(".highlighted").removeClass("highlighted").removeClass("match");
-                if (!searchAndHighlight($('.textSearchvalue_h').val())) {
-                    alert("No results found");
-                }
-
-
+                $('table tbody tr td:contains("' + value + '")').parent('tr').show();
             });
         </script>
     </body>
