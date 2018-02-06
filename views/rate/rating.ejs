@@ -41,6 +41,13 @@
             </table>
         </div>
         <script>
+
+            $(document).ajaxStart(function () {
+                $('#loading').show();
+            }).ajaxStop(function () {
+                $('#loading').hide();
+            });
+
             var listArray = Array();
 
             $(document).ready(function () {
@@ -131,7 +138,7 @@
                             line += "<td><img src='images/alert.png' width='20dp' height='20dp'></td>";
                         }
                     }
-                    else{
+                    else {
                         line += "<td><img src='images/alert.png' width='20dp' height='20dp'></td>";
                     }
                     line += '</tr>';
