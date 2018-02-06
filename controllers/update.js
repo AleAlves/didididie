@@ -10,22 +10,22 @@ module.exports = function (app) {
         },
 
         updateUser: function (req, res) {
-            track.find({ 'track_rates.rate_user_id': 'luziamed' }).select({}).exec(function (error, callback) {
+            track.find({ 'track_rates.rate_user_id': 'luziamd' }).select({}).exec(function (error, callback) {
                 if (error) {
                     console.log("Error" + error);
                 }
                 else {
-                    console.log("Satrt");
+                    console.log("Start");
                     for (var i in callback) {
                         for (var j in callback[i].track_rates)
-                            if (callback[i].track_rates[j].rate_user_id == 'luziamed') {
-                                callback[i].track_rates[j].rate_user_id = 'luziamd';
+                            if (callback[i].track_rates[j].rate_user_id == 'luziamd') {
+                                callback[i].track_rates[j].remove();
                                 callback[i].save(function (error, callback) {
                                     if (error) {
-
+                                        console.log("Erro");
                                     }
                                     else {
-                                        console.log(callback);
+                                        console.log("Done");
                                     }
                                 });
                             }

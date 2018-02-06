@@ -13,6 +13,10 @@
                 <span>PlayList Score: </span>
                 <span id="score"></span>
             </h3>
+            <h3>
+                <span>Tracks: </span>
+                <span id="tracks_count"></span>
+            </h3>
             <table class="table table-condensed">
                 <thead>
                     <tr>
@@ -90,12 +94,15 @@
 
                 $('#score').empty();
                 $('#score').append(result.playlist_data.total_avarage_rate);
+                $('#tracks_count').empty();
+                $('#tracks_count').append(result.list.length);
 
                 $('#users').empty();
                 for (var i in result.user_data) {
                     try {
                         var url = result.user_data[i].user_image_url;
-                        if (url === undefined)
+                        console.log(url);
+                        if (url === undefined || url == '')
                             url = 'images/spotify.png';
                         $('#users').
                             append('<tr>').
