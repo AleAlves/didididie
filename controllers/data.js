@@ -47,6 +47,7 @@ module.exports = function (app) {
                                 var sum = 0;
                                 var count = 0;
                                 for (var j in trackList) {
+                                    updateAvaragerate(req, res, trackList[j])
                                     if (trackList[j].track_add_by == users[i].user_id) {
                                         sum += trackList[j].track_rates_avarage_rate;
                                         count++;
@@ -82,6 +83,22 @@ module.exports = function (app) {
                 }
             });
         });
+    }
+
+    function updateAvaragerate(req, res, track) {
+        console.log("Track");
+        console.log(track);
+        var rates = 0;
+        var ratesCount = 0;
+        for (var i = 0; i < track.track_rates.length; i++) {
+            rates += track.track_rates[i].rate_value;
+            ratesCount++;
+            console.log("rate: " + rates);
+        }
+        rates = rates / ratesCount;
+        console.log("Result: " + rates);
+        track.track_rates_avarage_rate = rates;
+        track.save();
     }
 
     return dataController;

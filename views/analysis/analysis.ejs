@@ -1,6 +1,7 @@
 <% include ../header %>
 
     <body>
+        <div id="loading" class="loading"></div>
         <a href="/">
             <button class="mdc-fab material-icons app-fab--absolute" aria-label="back">
                 <span class="mdc-fab__icon">
@@ -68,6 +69,13 @@
             </table>
         </div>
         <script>
+
+            $(document).ajaxStart(function () {
+                $('#loading').show();
+            }).ajaxStop(function () {
+                $('#loading').hide();
+            });
+
             var listArray = Array();
 
             $(document).ready(function () {
