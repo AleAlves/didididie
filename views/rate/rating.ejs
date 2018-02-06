@@ -104,14 +104,15 @@
             }
 
             function loadData(result) {
+                console.log("reload");
                 $('tbody').empty();
                 for (var i in result.list) {
                     listArray[i] = result.list[i].track_id;
                     var line = null;
                     line += '<tr>';
                     line += '<td><img src="' + result.list[i].track_image + '" width="150px" height="150px"/></td>';
-                    line += '<td>' + result.list[i].track_name + '</td>';
-                    line += '<td>' + result.list[i].track_artist + '</td>';
+                    line += '<td>' + result.list[i].track_name.toLowerCase() + '</td>';
+                    line += '<td>' + result.list[i].track_artist.toLowerCase() + '</td>';
                     line += "<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='positive(" + i + ");'><span>thumb_up</span></button></td>";
                     line += "<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='negative(" + i + ");'><span>thumb_down</span></button></td>";
                     if (result.list[i].track_rates != "") {
@@ -120,7 +121,7 @@
                             if (result.list[i].track_rates[j].rate_user_id == result.user_id) {
                                 rated = true;
                                 if (result.list[i].track_rates[j].rate_value == 1)
-                                    line += "<td> <img src='images/smile.png' width='20dp' height='20dp'>Gostei</td>";
+                                    line += "<td><img src='images/smile.png' width='20dp' height='20dp'>Gostei</td>";
                                 else if (result.list[i].track_rates[j].rate_value == -1)
                                     line += "<td><img src='images/disguted.png' width='20dp' height='20dp'> Não Gostei</td>";
                             }
@@ -128,6 +129,9 @@
                         if (!rated) {
                             line += "<td><img src='images/alert.png' width='20dp' height='20dp'></td>";
                         }
+                    }
+                    else{
+                        line += "<td><img src='images/alert.png' width='20dp' height='20dp'></td>";
                     }
                     line += '</tr>';
                     $('tbody').append(line);
