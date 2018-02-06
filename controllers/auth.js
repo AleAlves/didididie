@@ -68,9 +68,17 @@ module.exports = function (app) {
                         request.get(options, function (error, response, body) {
                             console.log("Body:");
                             console.log(body);
+                            var name = null;
+                            if (body.display_name == null || body.display_name == undefined || body.display_name == '') {
+                                name = body.id;
+                            }
+                            else {
+                                name = body.display_name;
+                            }
+
                             var user_object = new Object();
                             user_object.user_id = body.id;
-                            user_object.user_display_name = body.display_name != null && body.display_name != undefined ? body.display_name : body.id;
+                            user_object.user_display_name = name;
                             user_object.user_email = body.email;
                             user_object.user_image_url = body.images.length > 0 ? body.images[0].url : '';
                             user_logged.findOne({ user_id: body.id },
