@@ -98,8 +98,9 @@ module.exports = function (app) {
                                             });
                                         }
                                         else {
-                                            if (user_response.user_display_name != body.display_name)
-                                                user_response.user_display_name = body.display_name;
+                                            if (body.display_name != null && body.display_name != undefined && body.display_name != '')
+                                                if (user_response.user_display_name != body.display_name)
+                                                    user_response.user_display_name = body.display_name;
                                             if (body.images.length > 0 && user_response.user_image_url != body.images[0].url)
                                                 user_response.user_image_url = body.images[0].url;
                                             if (user_response.user_email != body.email)
