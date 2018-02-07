@@ -154,7 +154,7 @@
                 } else {
                     $("table tbody tr").show();
                 }
-                $('table tbody tr td:contains("' + value + '")').parent('tr').show();
+                $('table tbody tr td:contains("' + value.toLowerCase() + '")').parent('tr').show();
             });
         </script>
     </body>
