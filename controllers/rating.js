@@ -42,7 +42,7 @@ module.exports = function (app) {
                 },
                 data: ({
                     tracks: [{
-                        uri: req.body.track_uri,
+                        uri: '7MnT7msJZg3XBAS0OTfGrB',
                         positions: [
                             447
                         ]
