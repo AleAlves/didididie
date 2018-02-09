@@ -44,7 +44,7 @@ module.exports = function (app) {
                     tracks: [{
                         uri: req.body.track_uri,
                         positions: [
-                            req.body.track_position
+                            447
                         ]
                     }]
                 }),
