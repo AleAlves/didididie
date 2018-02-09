@@ -33,8 +33,30 @@ module.exports = function (app) {
             }
         },
 
-        delete: function(req, res){
-            
+        deleteTrack: function (req, res) {
+            var access_token = req.session.access_token;
+            var options = {
+                url: 'https://api.spotify.com/v1/users/' + req.session.user.user_id + '/playlists/' + req.session.playlist_id + '/tracks',
+                headers: {
+                    'Authorization': 'Bearer ' + access_token
+                },
+                data: ({
+                    tracks: [{
+                        uri: req.body.track_uri,
+                        positions: [
+                            req.body.track_position
+                        ]
+                    }]
+                }),
+                json: true
+            };
+            console.log(req.body.track_uri);
+            console.log(req.body.track_position);
+            request.delete(options, function (error, response, body) {
+                console.log("Delete body");
+                console.log(body);
+            });
+            res.send("WOW");
         }
 
     }

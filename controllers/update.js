@@ -59,9 +59,11 @@ module.exports = function (app) {
                             playlists.list_owner = body.items[i].owner.display_name;
                             playlists.list_owner_id = body.items[i].owner.id;
                             console.log("Body");
-                            console.log(body);
+                            // console.log(body);
                         }
                     }
+
+                    req.session.playlist_id =  playlists.list_id ;
 
                     var options = {
                         url: '	https://api.spotify.com/v1/users/' + playlists.list_owner_id + '/playlists/' + playlists.list_id + '/tracks?market=US',
@@ -134,10 +136,11 @@ module.exports = function (app) {
                 trackObject.track_image = playlist[i].items[j].track.album.images[0].url;
                 trackObject.track_artist = playlist[i].items[j].track.album.artists[0].name;
                 trackObject.track_rates_avarage_rate = 0;
+                trackObject.track_position = j;
                 data.push(trackObject);
                 count++;
-                console.log("Body- tracks");
-                console.log(playlist[i].items[j]);
+                // console.log("Body- tracks");
+                // console.log(playlist[i].items[j]);
             }
         }
         trackHandler(data, 0);
@@ -167,6 +170,7 @@ module.exports = function (app) {
                         }
                         else {
                             trackResponse.track_uri = trackObject[index].track_uri;
+                            trackResponse.track_position = index;
                             trackResponse.save(function(error, trackResponse){
                                 if(error){
                                     

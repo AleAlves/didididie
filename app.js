@@ -15,7 +15,7 @@ var express = require('express'),
 var port = process.env.PORT || 8080;
 global.dev = true;
 global.version = "1.0.0";
-global.database_link = process.env.DATABASE || 'mongodb://localhost:27017/didididie';
+global.database_link = process.env.DATABASE || 'mongodb://ale:nasaapodapp25081993@apodratewebapp-shard-00-00-b0o6a.mongodb.net:27017,apodratewebapp-shard-00-01-b0o6a.mongodb.net:27017,apodratewebapp-shard-00-02-b0o6a.mongodb.net:27017/didididie?ssl=true&replicaSet=apodRateWebApp-shard-0&authSource=admin';
 global.querystring = querystring;
 global.request = request;
 global.cookieParser = cookieParser;

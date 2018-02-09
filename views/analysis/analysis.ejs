@@ -33,6 +33,9 @@
                         <th>
                             Score
                         </th>
+                        <th>
+                            Votes
+                        </th>
                     </tr>
                 </thead>
                 <tbody id="users"></tbody>
@@ -77,6 +80,7 @@
             });
 
             var listArray = Array();
+            var listTracksPosition = new Array();
 
             $(document).ready(function () {
                 getPlayList();
@@ -118,6 +122,7 @@
                             append('<td>' + result.user_data[i].user_name + '</td>').
                             append('<td>' + result.user_data[i].user_tracks_count + '</td>').
                             append('<td>' + result.user_data[i].user_avarage_rate + '</td>').
+                            append("<td>" + result.user_data[i].user_total_votes + "/" + result.list.length + "</td>").
                             append('</tr>');
                     } catch (e) {
 
@@ -130,11 +135,12 @@
                     usersNames[result.users[i].user_id] = result.users[i].user_display_name;
                 }
                 for (var i in result.list) {
-                    listArray[i] = result.list[i].track_id;
+                    listArray[i] = result.list[i].track_uri;
+                    listTracksPosition[i] = result.list[i].track_position;
                     var position = parseInt(i) + 1;
                     var action = null;
                     var rate = result.list[i].track_rates_avarage_rate.toFixed(2);
-                    if (rate < 0.00)
+                    if (rate <= 0.00)
                         action = "<button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='deleteTrack(" + i + ");'><span>delete</span></button>";
                     else
                         action = "";
@@ -180,18 +186,19 @@
             }
 
             function deleteTrack(id) {
+                console.log(listTracksPosition[id]);
                 var request = $.ajax({
                     cache: false,
                     url: "/delete",
-                    type: 'POST',
+                    type: 'PUT',
                     data: {
-                        'track_uri': listArray[id]
+                        'track_uri': listArray[id],
+                        'track_position': listTracksPosition[id]
                     }
                 });
 
                 request.done(function (data) {
                     console.log("Done");
-                    loadData(data);
                 });
                 request.fail(function (jqXHR, textStatus) {
                     console.log(textStatus);

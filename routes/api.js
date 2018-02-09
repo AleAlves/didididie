@@ -12,10 +12,11 @@ module.exports = function (app) {
   app.get('/refresh_token', authController.refresh_token);
   app.get('/update', updateController.getPlaylist);
   app.get('/xablau', updateController.updateUser);
-  app.get('/delete', ratingController.delete);
+  app.put('/delete', ratingController.deleteTrack);
   app.post('/rate', ratingController.rateTrack);
   app.get('/rating', ratingController.getTracks);
   app.get('/rating_playlist', ratingController.index);
   app.get('/analysis', dataController.index);
   app.get('/analysis_playlist', dataController.playListAnalysis);
+
 }

@@ -119,6 +119,7 @@ module.exports = function (app) {
                                         console.log(req.session.user);
                                         global.user_logged_id = body.id;
                                         console.log(user_logged_id);
+                                        req.session.access_token = access_token;
                                         // we can also pass the token to the browser to make requests from there
                                         res.redirect('/#' +
                                             querystring.stringify({
