@@ -42,7 +42,7 @@ module.exports = function (app) {
                 },
                 data: ({
                     tracks: [{
-                        uri: '7MnT7msJZg3XBAS0OTfGrB',
+                        uri: 'spotify:track:7MnT7msJZg3XBAS0OTfGrB',
                         positions: [
                             447
                         ]
