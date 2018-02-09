@@ -58,12 +58,12 @@ module.exports = function (app) {
                             playlists.list_name = body.items[i].name;
                             playlists.list_owner = body.items[i].owner.display_name;
                             playlists.list_owner_id = body.items[i].owner.id;
-                            console.log("Body");
-                            // console.log(body);
+                            console.log("Playlist body");
+                            console.log(body);
                         }
                     }
 
-                    req.session.playlist_id =  playlists.list_id ;
+                    req.session.playlist_id = playlists.list_id;
 
                     var options = {
                         url: '	https://api.spotify.com/v1/users/' + playlists.list_owner_id + '/playlists/' + playlists.list_id + '/tracks?market=US',
@@ -171,10 +171,10 @@ module.exports = function (app) {
                         else {
                             trackResponse.track_uri = trackObject[index].track_uri;
                             trackResponse.track_position = index;
-                            trackResponse.save(function(error, trackResponse){
-                                if(error){
-                                    
-                                }else{
+                            trackResponse.save(function (error, trackResponse) {
+                                if (error) {
+
+                                } else {
                                     trackHandler(trackObject, ++index);
                                 }
                             });
