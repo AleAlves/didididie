@@ -58,11 +58,12 @@ module.exports = function (app) {
                             playlists.list_name = body.items[i].name;
                             playlists.list_owner = body.items[i].owner.display_name;
                             playlists.list_owner_id = body.items[i].owner.id;
-                            console.log("Playlist body");
-                            console.log(body);
                         }
+                        console.log("Playlist " + i);
+                        console.log(body);
                     }
 
+                    req.session.playlist_owner = playlists.list_owner_id;
                     req.session.playlist_id = playlists.list_id;
 
                     var options = {
@@ -93,15 +94,13 @@ module.exports = function (app) {
                                     }
                                     else {
                                         list = readTextFile(data, user_logged_id);
-                                        res.send({ 'status': 'Playlist Atualizada', 'list': body });
+                                        synchronizeDataBase(req, res, list);
                                     }
                                 });
                             }
                             else {
                                 list = readTextFile(data, user_logged_id);
-                                console.log('Body');
-                                console.log(body);
-                                res.send({ 'status': 'Playlist Atualizada', 'list': body });
+                                synchronizeDataBase(req, res, list);
                             }
                         }
                     });
@@ -112,6 +111,48 @@ module.exports = function (app) {
             }
         }
     };
+
+    function synchronizeDataBase(req, res, list) {
+        var tracks_for_delete = new Array();
+        track.find({}).exec(function (error, trackResponse) {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                for (var i = 0; i < trackResponse.length; i++) {
+                    var found = false;
+                    for (var j = 0; j < list.length; j++) {
+                        if (list[j].track_id == trackResponse[i].track_id) {
+                            found = true;
+                            break;
+                            console.log("-- tracks");
+                            console.log(trackResponse[i]);
+                        }
+                    }
+                    if (!found) {
+                        console.log("Not found");
+                        console.log(trackResponse[i].track_name + " " + trackResponse[i].track_add_by);
+                        tracks_for_delete.push(trackResponse[i].track_id);
+                    }
+                };
+                if (tracks_for_delete.length > 0) {
+                    track.remove({ track_id: { $in: tracks_for_delete } }, function (error, response) {
+                        if (error) {
+                            console.log(error);
+                            res.send(error);
+                        }
+                        else {
+                            console.log("Done");
+                            res.send({ 'status': 'Playlist Atualizadas', 'list': list });
+                        }
+                    });
+                }
+                else{
+                    res.send({ 'status': 'Playlist Atualizadas', 'list': list });
+                }
+            }
+        });
+    }
 
     var generateRandomString = function (length) {
         var text = '';
@@ -139,6 +180,10 @@ module.exports = function (app) {
                 trackObject.track_position = j;
                 data.push(trackObject);
                 count++;
+                if (playlist[i].items[j].track.name == "Tempo Perdido") {
+                    console.log("Body- tracks");
+                    console.log(playlist[i].items[j]);
+                }
                 // console.log("Body- tracks");
                 // console.log(playlist[i].items[j]);
             }

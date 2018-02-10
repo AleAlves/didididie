@@ -132,6 +132,10 @@
                     }
 
                     document.getElementById('update-playlist').addEventListener('click', function () {
+                        updatePlayList();
+                    });
+
+                    function updatePlayList() {
                         var request = $.ajax({
                             cache: false,
                             url: "/update",
@@ -147,22 +151,7 @@
                             console.log(textStatus);
                             $('#loading').hide();
                         });
-                    });
-
-                    // document.getElementById('rate_button').addEventListener('click', function () {
-
-                    //     var request = $.ajax({
-                    //         cache: false,
-                    //         url: "/rating",
-                    //     });
-
-                    //     request.done(function (data) {
-                    //         window.location.assign('/go_rating');
-                    //     });
-                    //     request.fail(function (jqXHR, textStatus) {
-                    //         console.log(textStatus);
-                    //     });
-                    // });
+                    }
 
                     document.getElementById('exit_button').addEventListener('click', function () {
 

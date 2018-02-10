@@ -1,3 +1,4 @@
+
 module.exports = function (app) {
 
     var playlists = app.models.playlists;
@@ -34,32 +35,67 @@ module.exports = function (app) {
         },
 
         deleteTrack: function (req, res) {
+
+            console.log(req.session.playlist_owner);
+            console.log(req.session.playlist_id);
+            console.log(req.body.track_uri);
+            console.log(req.body.track_position);
+
+            var position = parseInt(req.body.track_position);
             var access_token = req.session.access_token;
             var options = {
-                url: 'https://api.spotify.com/v1/users/' + req.session.user.user_id + '/playlists/' + req.session.playlist_id + '/tracks',
+                url: 'https://api.spotify.com/v1/users/' + req.session.playlist_owner + '/playlists/' + req.session.playlist_id + '/tracks',
                 headers: {
                     'Authorization': 'Bearer ' + access_token
                 },
-                data: ({
-                    tracks: [{
-                        uri: 'spotify:track:7MnT7msJZg3XBAS0OTfGrB',
-                        positions: [
-                            447
-                        ]
-                    }]
-                }),
+                cache: false,
+                body: {
+                    tracks: [
+                        {
+                            uri: req.body.track_uri,
+                            positions: [
+                                position
+                            ]
+                        }]
+                },
                 json: true
             };
-            console.log(req.body.track_uri);
-            console.log(req.body.track_position);
             request.delete(options, function (error, response, body) {
-                console.log("Delete body");
-                console.log(body);
+                if (error) {
+                    res.send(error);
+                }
+                else {
+                    console.log("Delete body");
+                    console.log(body);
+                    if (body.statusCode == 200) {
+                        console.log("Deleted from spotify");
+                        deleteTrack(req, res, req.body.track_uri);
+                    }
+                    else {
+                        console.log("could not delete from spotify");
+                        res.send(body);
+                    }
+                }
             });
-            res.send("WOW");
         }
 
     }
+
+    function deleteTrack(req, res, track_id) {
+        var query = track.findOne({ "track_id": track_id });
+        query.select({});
+        query.exec(function (error, trackResponse) {
+            trackResponse.remove();
+            trackResponse.save(function(error, response){
+                if(error){
+                    res.send(error);
+                }
+                else{
+                    res.send("Deleted from dididide");
+                }
+            });
+        });
+    };
 
     function rateTrack(req, res, body) {
         console.log("Body");
