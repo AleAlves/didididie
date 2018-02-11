@@ -38,12 +38,13 @@ module.exports = function (app) {
 
             if (req.session.user != null) {
 
+                console.log();
                 var state = generateRandomString(16);
                 // your application requests authorization
                 var list = null;
-                var access_token = req.query.access_token;
+                var access_token = req.session.access_token;
                 var options = {
-                    url: 'https://api.spotify.com/v1/users/' + user_logged_id + '/playlists/',
+                    url: 'https://api.spotify.com/v1/users/' + req.session.user.user_id + '/playlists/',
                     headers: {
                         'Authorization': 'Bearer ' + access_token
                     },
@@ -93,13 +94,13 @@ module.exports = function (app) {
                                         readNext(body);
                                     }
                                     else {
-                                        list = readTextFile(data, user_logged_id);
+                                        list = readTextFile(data, req.session.user.user_id);
                                         synchronizeDataBase(req, res, list);
                                     }
                                 });
                             }
                             else {
-                                list = readTextFile(data, user_logged_id);
+                                list = readTextFile(data, req.session.user.user_id);
                                 synchronizeDataBase(req, res, list);
                             }
                         }
@@ -143,12 +144,12 @@ module.exports = function (app) {
                         }
                         else {
                             console.log("Done");
-                            res.send({ 'status': 'Playlist Atualizadas', 'list': list });
+                            res.redirect('/#' + querystring.stringify({ access_token: req.session.access_token, refresh_token: req.session.refresh_token }));
                         }
                     });
                 }
-                else{
-                    res.send({ 'status': 'Playlist Atualizadas', 'list': list });
+                else {
+                    res.redirect('/#' + querystring.stringify({ access_token: req.session.access_token, refresh_token: req.session.refresh_token }));
                 }
             }
         });

@@ -1,210 +1,211 @@
 <% include ../header %>
 
     <body>
-        <div id="loading" class="loading"></div>
-        <a href="/">
-            <button class="mdc-fab material-icons app-fab--absolute" aria-label="back">
-                <span class="mdc-fab__icon">
-                    home
-                </span>
-            </button>
-        </a>
-        <div class="container">
-            <h3>
-                <span>PlayList Score: </span>
-                <span id="score"></span>
-            </h3>
-            <h3>
-                <span>Tracks: </span>
-                <span id="tracks_count"></span>
-            </h3>
-            <table class="table table-condensed">
-                <thead>
-                    <tr>
-                        <th>
+        <% include ../nav %>
+            <div id="loading" class="loading"></div>
+            <a href="/">
+                <button class="mdc-fab material-icons app-fab--absolute" aria-label="back">
+                    <span class="mdc-fab__icon">
+                        home
+                    </span>
+                </button>
+            </a>
+            <div class="container">
+                <h3>
+                    <span>PlayList Score: </span>
+                    <span id="score"></span>
+                </h3>
+                <h3>
+                    <span>Tracks: </span>
+                    <span id="tracks_count"></span>
+                </h3>
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>
 
-                        </th>
-                        <th>
-                            User
-                        </th>
-                        <th>
-                            Musics
-                        </th>
-                        <th>
-                            Score
-                        </th>
-                        <th>
-                            Votes
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="users"></tbody>
-            </table>
-        </div>
-        <div class="container">
-            <table class="table table-condensed">
-                <thead>
-                    <tr>
-                        <th>
-                            Rate
-                        </th>
-                        <th>
-                            Votes
-                        </th>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Artist
-                        </th>
-                        <th>
-                            Added by
-                        </th>
-                        <th>
-                            Ranking
-                        </th>
-                        <th>
-                            Action
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="tracks"></tbody>
-            </table>
-        </div>
-        <script>
+                            </th>
+                            <th>
+                                User
+                            </th>
+                            <th>
+                                Musics
+                            </th>
+                            <th>
+                                Score
+                            </th>
+                            <th>
+                                Votes
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="users"></tbody>
+                </table>
+            </div>
+            <div class="container">
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>
+                                Rate
+                            </th>
+                            <th>
+                                Votes
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Artist
+                            </th>
+                            <th>
+                                Added by
+                            </th>
+                            <th>
+                                Ranking
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tracks"></tbody>
+                </table>
+            </div>
+            <script>
 
-            $(document).ajaxStart(function () {
-                $('#loading').show();
-            }).ajaxStop(function () {
-                $('#loading').hide();
-            });
+                $(document).ajaxStart(function () {
+                    $('#loading').show();
+                }).ajaxStop(function () {
+                    $('#loading').hide();
+                });
 
-            var listArray = Array();
-            var listTracksPosition = new Array();
+                var listArray = Array();
+                var listTracksPosition = new Array();
 
-            $(document).ready(function () {
-                getPlayList();
+                $(document).ready(function () {
+                    getPlayList();
 
-                function getPlayList() {
+                    function getPlayList() {
+                        var request = $.ajax({
+                            cache: false,
+                            url: "/analysis_playlist"
+                        });
+
+                        request.done(function (result) {
+                            console.log(result);
+                            loadData(result);
+                        });
+                        request.fail(function (jqXHR, textStatus) {
+                            console.log(textStatus);
+                        });
+                    }
+
+                });
+
+                function loadData(result) {
+
+                    $('#score').empty();
+                    $('#score').append(result.playlist_data.total_avarage_rate);
+                    $('#tracks_count').empty();
+                    $('#tracks_count').append(result.list.length);
+
+                    $('#users').empty();
+                    for (var i in result.user_data) {
+                        try {
+                            var url = result.user_data[i].user_image_url;
+                            console.log(url);
+                            if (url === undefined || url == '')
+                                url = 'images/spotify.png';
+                            $('#users').
+                                append('<tr>').
+                                append('<td><img src="' + url + '" width="50px" height="50px"></td>').
+                                append('<td>' + result.user_data[i].user_name + '</td>').
+                                append('<td>' + result.user_data[i].user_tracks_count + '</td>').
+                                append('<td>' + result.user_data[i].user_avarage_rate + '</td>').
+                                append("<td>" + result.user_data[i].user_total_votes + "/" + result.list.length + "</td>").
+                                append('</tr>');
+                        } catch (e) {
+
+                        }
+                    }
+
+                    $('#tracks').empty();
+                    var usersNames = new Array();
+                    for (var i in result.users) {
+                        usersNames[result.users[i].user_id] = result.users[i].user_display_name;
+                    }
+                    for (var i in result.list) {
+                        listArray[i] = result.list[i].track_uri;
+                        listTracksPosition[i] = result.list[i].track_position;
+                        var position = parseInt(i) + 1;
+                        var action = null;
+                        var rate = result.list[i].track_rates_avarage_rate.toFixed(2);
+                        if (rate <= 0.00)
+                            action = "<button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='deleteTrack(" + i + ");'><span>delete</span></button>";
+                        else
+                            action = "";
+                        $('#tracks').
+                            append('<tr>').
+                            append('<td>' + result.list[i].track_rates_avarage_rate.toFixed(2) + '</td>').
+                            append('<td>' + result.list[i].track_rates.length + '</td>').
+                            append('<td>' + result.list[i].track_name + '</td>').
+                            append('<td>' + result.list[i].track_artist + '</td>').
+                            append('<td>' + usersNames[result.list[i].track_add_by] + '</td>').
+                            append('<td>' + position + 'º</td>').
+                            append("<td>" + action + "</td>").
+                            append('</tr><tr>');
+                        var likes = "";
+                        for (var j in result.list[i].track_rates) {
+                            if (result.list[i].track_rates[j].rate_value == 1) {
+                                likes += usersNames[result.list[i].track_rates[j].rate_user_id] + ' - ';
+                            }
+                        }
+
+                        if (likes != "") {
+                            likes = '<td class="like_dislike_td" colspan="4">' + likes + '</td>';
+                            $('#tracks').
+                                append('<td><img src="images/smile.png" width="20dp" height="20dp"></td>').
+                                append(likes).
+                                append('</tr><tr>');
+                        }
+                        var dislikes = "";
+                        for (var j in result.list[i].track_rates) {
+                            if (result.list[i].track_rates[j].rate_value == -1) {
+                                dislikes += usersNames[result.list[i].track_rates[j].rate_user_id] + ' - ';
+                            }
+                        }
+
+                        if (dislikes != "") {
+                            dislikes = '<td class="like_dislike_td" colspan="4">' + dislikes + '</td>';
+                            $('#tracks').
+                                append('<td><img src="images/disguted.png" width="20dp" height="20dp"></td>').
+                                append(dislikes).
+                                append('</tr>');
+                        }
+                    }
+                }
+
+                function deleteTrack(id) {
+                    console.log(listTracksPosition[id]);
                     var request = $.ajax({
                         cache: false,
-                        url: "/analysis_playlist"
+                        url: "/delete",
+                        type: 'PUT',
+                        data: {
+                            'track_uri': listArray[id],
+                            'track_position': listTracksPosition[id]
+                        }
                     });
 
-                    request.done(function (result) {
-                        console.log(result);
-                        loadData(result);
+                    request.done(function (data) {
+                        console.log(data);
                     });
                     request.fail(function (jqXHR, textStatus) {
                         console.log(textStatus);
                     });
                 }
-
-            });
-
-            function loadData(result) {
-
-                $('#score').empty();
-                $('#score').append(result.playlist_data.total_avarage_rate);
-                $('#tracks_count').empty();
-                $('#tracks_count').append(result.list.length);
-
-                $('#users').empty();
-                for (var i in result.user_data) {
-                    try {
-                        var url = result.user_data[i].user_image_url;
-                        console.log(url);
-                        if (url === undefined || url == '')
-                            url = 'images/spotify.png';
-                        $('#users').
-                            append('<tr>').
-                            append('<td><img src="' + url + '" width="50px" height="50px"></td>').
-                            append('<td>' + result.user_data[i].user_name + '</td>').
-                            append('<td>' + result.user_data[i].user_tracks_count + '</td>').
-                            append('<td>' + result.user_data[i].user_avarage_rate + '</td>').
-                            append("<td>" + result.user_data[i].user_total_votes + "/" + result.list.length + "</td>").
-                            append('</tr>');
-                    } catch (e) {
-
-                    }
-                }
-
-                $('#tracks').empty();
-                var usersNames = new Array();
-                for (var i in result.users) {
-                    usersNames[result.users[i].user_id] = result.users[i].user_display_name;
-                }
-                for (var i in result.list) {
-                    listArray[i] = result.list[i].track_uri;
-                    listTracksPosition[i] = result.list[i].track_position;
-                    var position = parseInt(i) + 1;
-                    var action = null;
-                    var rate = result.list[i].track_rates_avarage_rate.toFixed(2);
-                    if (rate <= 0.00)
-                        action = "<button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='deleteTrack(" + i + ");'><span>delete</span></button>";
-                    else
-                        action = "";
-                    $('#tracks').
-                        append('<tr>').
-                        append('<td>' + result.list[i].track_rates_avarage_rate.toFixed(2) + '</td>').
-                        append('<td>' + result.list[i].track_rates.length + '</td>').
-                        append('<td>' + result.list[i].track_name + '</td>').
-                        append('<td>' + result.list[i].track_artist + '</td>').
-                        append('<td>' + usersNames[result.list[i].track_add_by] + '</td>').
-                        append('<td>' + position + 'º</td>').
-                        append("<td>" + action + "</td>").
-                        append('</tr><tr>');
-                    var likes = "";
-                    for (var j in result.list[i].track_rates) {
-                        if (result.list[i].track_rates[j].rate_value == 1) {
-                            likes += usersNames[result.list[i].track_rates[j].rate_user_id] + ' - ';
-                        }
-                    }
-
-                    if (likes != "") {
-                        likes = '<td class="like_dislike_td" colspan="4">' + likes + '</td>';
-                        $('#tracks').
-                            append('<td><img src="images/smile.png" width="20dp" height="20dp"></td>').
-                            append(likes).
-                            append('</tr><tr>');
-                    }
-                    var dislikes = "";
-                    for (var j in result.list[i].track_rates) {
-                        if (result.list[i].track_rates[j].rate_value == -1) {
-                            dislikes += usersNames[result.list[i].track_rates[j].rate_user_id] + ' - ';
-                        }
-                    }
-
-                    if (dislikes != "") {
-                        dislikes = '<td class="like_dislike_td" colspan="4">' + dislikes + '</td>';
-                        $('#tracks').
-                            append('<td><img src="images/disguted.png" width="20dp" height="20dp"></td>').
-                            append(dislikes).
-                            append('</tr>');
-                    }
-                }
-            }
-
-            function deleteTrack(id) {
-                console.log(listTracksPosition[id]);
-                var request = $.ajax({
-                    cache: false,
-                    url: "/delete",
-                    type: 'PUT',
-                    data: {
-                        'track_uri': listArray[id],
-                        'track_position': listTracksPosition[id]
-                    }
-                });
-
-                request.done(function (data) {
-                    console.log(data);
-                });
-                request.fail(function (jqXHR, textStatus) {
-                    console.log(textStatus);
-                });
-            }
-        </script>
+            </script>
     </body>
 
     </html>

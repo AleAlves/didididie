@@ -1,162 +1,155 @@
 <% include ../header %>
 
     <body>
-        <div id="loading" class="loading"></div>
-        <div class="footer-search">
-            <input type="text" id="search" class="search-box" placeholder="search" autocomplete="off"></input>
-            <a href="/">
-                <button class="mdc-fab material-icons app-fab--absolute" aria-label="back">
-                    <span class="mdc-fab__icon">
-                        home
-                    </span>
-                </button>
-            </a>
-        </div>
+        <% include ../nav %>
+            <% include ../search %>
+                <div id="loading" class="loading"></div>
+                <div class="container">
 
-        <div class="container">
+                    <div class="row">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="row">
+                                        Album
+                                    </th>
+                                    <th scope="row">
+                                        Name
+                                    </th>
+                                    <th scope="row">
+                                        Artist
+                                    </th>
+                                    <th scope="row">
 
-            <table class="table table-condensed">
-                <thead>
-                    <tr>
-                        <th>
-                            Album
-                        </th>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Artist
-                        </th>
-                        <th>
+                                    </th>
+                                    <th scope="row">
 
-                        </th>
-                        <th>
+                                    </th>
+                                    <th scope="row">
+                                        Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <script>
 
-                        </th>
-                        <th>
-                            Status
-                        </th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-        <script>
-
-            $(document).ajaxStart(function () {
-                $('#loading').show();
-            }).ajaxStop(function () {
-                $('#loading').hide();
-            });
-
-            var listArray = Array();
-
-            $(document).ready(function () {
-                getPlayList();
-
-                function getPlayList() {
-                    var request = $.ajax({
-                        cache: false,
-                        url: "/rating"
+                    $(document).ajaxStart(function () {
+                        $('#loading').show();
+                    }).ajaxStop(function () {
+                        $('#loading').hide();
                     });
 
-                    request.done(function (result) {
-                        console.log(result);
-                        loadData(result);
+                    var listArray = Array();
+
+                    $(document).ready(function () {
+                        getPlayList();
+
+                        function getPlayList() {
+                            var request = $.ajax({
+                                cache: false,
+                                url: "/rating"
+                            });
+
+                            request.done(function (result) {
+                                console.log(result);
+                                loadData(result);
+                            });
+                            request.fail(function (jqXHR, textStatus) {
+                                console.log(textStatus);
+                            });
+                        }
+
                     });
-                    request.fail(function (jqXHR, textStatus) {
-                        console.log(textStatus);
-                    });
-                }
 
-            });
-
-            function positive(id) {
-                var request = $.ajax({
-                    cache: false,
-                    url: "/rate",
-                    type: 'POST',
-                    data: {
-                        'track_id': listArray[id],
-                        'rate_value': 1
-                    }
-                });
-
-                request.done(function (data) {
-                    console.log("Done");
-                    loadData(data);
-                });
-                request.fail(function (jqXHR, textStatus) {
-                    console.log(textStatus);
-                });
-            }
-
-            function negative(id) {
-                var request = $.ajax({
-                    cache: false,
-                    url: "/rate",
-                    type: 'POST',
-                    data: {
-                        'track_id': listArray[id],
-                        'rate_value': -1
-                    }
-                });
-
-                request.done(function (data) {
-                    console.log("Done");
-                    loadData(data);
-                });
-                request.fail(function (jqXHR, textStatus) {
-                    console.log(textStatus);
-                });
-            }
-
-            function loadData(result) {
-                console.log("reload");
-                $('#search').empty();
-                $('tbody').empty();
-                for (var i in result.list) {
-                    listArray[i] = result.list[i].track_id;
-                    var line = null;
-                    line += '<tr>';
-                    line += '<td><img src="' + result.list[i].track_image + '" width="150px" height="150px"/></td>';
-                    line += '<td>' + result.list[i].track_name.toLowerCase() + '</td>';
-                    line += '<td>' + result.list[i].track_artist.toLowerCase() + '</td>';
-                    line += "<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='positive(" + i + ");'><span>thumb_up</span></button></td>";
-                    line += "<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='negative(" + i + ");'><span>thumb_down</span></button></td>";
-                    if (result.list[i].track_rates != "") {
-                        var rated = false;
-                        for (var j in result.list[i].track_rates) {
-                            if (result.list[i].track_rates[j].rate_user_id == result.user_id) {
-                                rated = true;
-                                if (result.list[i].track_rates[j].rate_value == 1)
-                                    line += "<td><img src='images/smile.png' width='20dp' height='20dp'>Gostei</td>";
-                                else if (result.list[i].track_rates[j].rate_value == -1)
-                                    line += "<td><img src='images/disguted.png' width='20dp' height='20dp'> Não Gostei</td>";
+                    function positive(id) {
+                        var request = $.ajax({
+                            cache: false,
+                            url: "/rate",
+                            type: 'POST',
+                            data: {
+                                'track_id': listArray[id],
+                                'rate_value': 1
                             }
-                        }
-                        if (!rated) {
-                            line += "<td><img src='images/alert.png' width='20dp' height='20dp'></td>";
-                        }
-                    }
-                    else {
-                        line += "<td><img src='images/alert.png' width='20dp' height='20dp'></td>";
-                    }
-                    line += '</tr>';
-                    $('tbody').append(line);
-                }
-            }
+                        });
 
-            $("#search").on("keyup", function () {
-                var value = $(this).val();
-                if (value != '') {
-                    $("table tbody tr").hide();
-                } else {
-                    $("table tbody tr").show();
-                }
-                $('table tbody tr td:contains("' + value.toLowerCase() + '")').parent('tr').show();
-            });
-        </script>
+                        request.done(function (data) {
+                            console.log("Done");
+                            loadData(data);
+                        });
+                        request.fail(function (jqXHR, textStatus) {
+                            console.log(textStatus);
+                        });
+                    }
+
+                    function negative(id) {
+                        var request = $.ajax({
+                            cache: false,
+                            url: "/rate",
+                            type: 'POST',
+                            data: {
+                                'track_id': listArray[id],
+                                'rate_value': -1
+                            }
+                        });
+
+                        request.done(function (data) {
+                            console.log("Done");
+                            loadData(data);
+                        });
+                        request.fail(function (jqXHR, textStatus) {
+                            console.log(textStatus);
+                        });
+                    }
+
+                    function loadData(result) {
+                        console.log("reload");
+                        $('#search').empty();
+                        $('tbody').empty();
+                        for (var i in result.list) {
+                            listArray[i] = result.list[i].track_id;
+                            var line = null;
+                            line += '<tr>';
+                            line += '<td><img src="' + result.list[i].track_image + '" width="150px" height="150px"/></td>';
+                            line += '<td>' + result.list[i].track_name.toLowerCase() + '</td>';
+                            line += '<td>' + result.list[i].track_artist.toLowerCase() + '</td>';
+                            line += "<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='positive(" + i + ");'><span>thumb_up</span></button></td>";
+                            line += "<td><button class='mdc-fab material-icons app-fab--thumb' aria-label='back' onclick='negative(" + i + ");'><span>thumb_down</span></button></td>";
+                            if (result.list[i].track_rates != "") {
+                                var rated = false;
+                                for (var j in result.list[i].track_rates) {
+                                    if (result.list[i].track_rates[j].rate_user_id == result.user_id) {
+                                        rated = true;
+                                        if (result.list[i].track_rates[j].rate_value == 1)
+                                            line += "<td><img src='images/smile.png' width='20dp' height='20dp'>Gostei</td>";
+                                        else if (result.list[i].track_rates[j].rate_value == -1)
+                                            line += "<td><img src='images/disguted.png' width='20dp' height='20dp'> Não Gostei</td>";
+                                    }
+                                }
+                                if (!rated) {
+                                    line += "<td><img src='images/alert.png' width='20dp' height='20dp'></td>";
+                                }
+                            }
+                            else {
+                                line += "<td><img src='images/alert.png' width='20dp' height='20dp'></td>";
+                            }
+                            line += '</tr>';
+                            $('tbody').append(line);
+                        }
+                    }
+
+                    $("#search").on("keyup", function () {
+                        var value = $(this).val();
+                        if (value != '') {
+                            $("table tbody tr").hide();
+                        } else {
+                            $("table tbody tr").show();
+                        }
+                        $('table tbody tr td:contains("' + value.toLowerCase() + '")').parent('tr').show();
+                    });
+                </script>
     </body>
 
     </html>

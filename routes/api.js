@@ -6,6 +6,7 @@ module.exports = function (app) {
   var serviceController = app.controllers.service;
   var dataController = app.controllers.data;
   app.get('/', serviceController.index);
+  app.get('/index', serviceController.index);
   app.get('/login', authController.login);
   app.get('/logout', authController.logout);
   app.get('/callback', authController.callback);

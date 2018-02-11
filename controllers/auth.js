@@ -27,7 +27,7 @@ module.exports = function (app) {
 
         logout: function (req, res) {
             req.session.destroy();
-            res.redirect('/home/index');
+            res.redirect('/index');
         },
 
         callback: function (req, res) {
@@ -116,10 +116,8 @@ module.exports = function (app) {
                                             })
                                         }
                                         req.session.user = user_object;
-                                        console.log(req.session.user);
-                                        global.user_logged_id = body.id;
-                                        console.log(user_logged_id);
                                         req.session.access_token = access_token;
+                                        req.session.refresh_token = refresh_token;
                                         // we can also pass the token to the browser to make requests from there
                                         res.redirect('/#' +
                                             querystring.stringify({

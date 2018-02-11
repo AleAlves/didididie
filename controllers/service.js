@@ -4,7 +4,12 @@ module.exports = function (app) {
     var ServiceController = {
 
         index: function (req, res) {
-            res.render('home/index', { v: version });
+            if (req.session.user != null) {
+                res.render('home/index');
+            }
+            else {
+                res.render('home/index');
+            }
         },
 
         version: function (req, res) {
