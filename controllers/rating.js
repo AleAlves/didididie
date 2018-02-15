@@ -86,16 +86,46 @@ module.exports = function (app) {
         query.select({});
         query.exec(function (error, trackResponse) {
             trackResponse.remove();
-            trackResponse.save(function(error, response){
-                if(error){
+            trackResponse.save(function (error, response) {
+                if (error) {
                     res.send(error);
                 }
-                else{
-                    res.send("Deleted from dididide");
+                else {
+                    track.find({}).exec(function (error, trackResponse) {
+                        if (error) {
+                            res.send(error);
+                        }
+                        else {
+                            updateIndexes( res, trackResponse, 0);
+                        }
+                    });
                 }
             });
         });
     };
+
+    function updateIndexes(res, track, index) {
+        if (index < track.length) {
+            if (track[index].track_position != index) {
+                track[index].track_position = index;
+                track[index].save(function (error, response) {
+                    if (error) {
+                        console.log("Error");
+                    }
+                    else {
+                        console.log("Atualizado " + index);
+                        updateIndexes(res, track, ++index);
+                    }
+                });
+            }
+            else {
+                updateIndexes(res, track, ++index);
+            }
+        }
+        else {
+            res.send("Deleted from dididide");
+        }
+    }
 
     function rateTrack(req, res, body) {
         console.log("Body");

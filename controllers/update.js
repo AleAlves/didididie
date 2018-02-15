@@ -144,15 +144,52 @@ module.exports = function (app) {
                         }
                         else {
                             console.log("Done");
-                            res.redirect('/#' + querystring.stringify({ access_token: req.session.access_token, refresh_token: req.session.refresh_token }));
+                            track.find({}).exec(function (error, trackResponse) {
+                                if (error) {
+                                    res.send(error);
+                                }
+                                else {
+                                    updateIndexes(req, res, trackResponse, 0);
+                                }
+                            });
                         }
                     });
                 }
                 else {
-                    res.redirect('/#' + querystring.stringify({ access_token: req.session.access_token, refresh_token: req.session.refresh_token }));
+                    track.find({}).exec(function (error, trackResponse) {
+                        if (error) {
+                            res.send(error);
+                        }
+                        else {
+                            updateIndexes(req, res, trackResponse, 0);
+                        }
+                    });
                 }
             }
         });
+    }
+
+    function updateIndexes(req, res, track, index) {
+        if (index < track.length) {
+            if (track[index].track_position != index) {
+                track[index].track_position = index;
+                track[index].save(function (error, response) {
+                    if (error) {
+                        console.log("Error");
+                    }
+                    else {
+                        console.log("Atualizado " + index);
+                        updateIndexes(req, res, track, ++index);
+                    }
+                });
+            }
+            else {
+                updateIndexes(req, res, track, ++index);
+            }
+        }
+        else {
+            res.redirect('/#' + querystring.stringify({ access_token: req.session.access_token, refresh_token: req.session.refresh_token }));
+        }
     }
 
     var generateRandomString = function (length) {
