@@ -1,1 +1,1 @@
-# DIDIDIDIE - poc de um servico integrado à API do spotfy
+# DIDIDIDIE - poc de um servico integrado à API do spotify
